@@ -319,8 +319,8 @@ const groupBy = <K extends string, V>(func: (el: V) => K) => (
   acc: Record<K, V[]>,
   el: V
 ): Record<K, V[]> => {
-  const groupName = func(el);
-  const group: V[] = acc[groupName] || [];
+  const groupName = func(el),
+    group: V[] = acc[groupName] || [];
   return Object.assign({}, acc, { [groupName]: group.concat(el) });
 }
 ```
@@ -672,8 +672,8 @@ const partition = <T>(func: (el: T) => boolean) => (
   acc: T[][],
   el: T
 ) => {
-  const a0 = acc[0] || [];
-  const a1 = acc[1] || [];
+  const a0 = acc[0] || [],
+    a1 = acc[1] || [];
   return func(el) ? [a0.concat(el), a1] : [a0, a1.concat(el)];
 }
 ```
