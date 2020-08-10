@@ -4,8 +4,7 @@
   "description": "A collection of utility functions to be used with .map, .filter, .sort and .reduce",
   "main": "dist/index.js",
   "files": [
-    "dist",
-    "index.ts"
+    "dist"
   ],
   "scripts": {
     "build": "tsc --removeComments",

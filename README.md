@@ -1,5 +1,9 @@
 # list-fns
 
+[![npm version](https://img.shields.io/npm/v/list-fns)](https://npmjs.com/package/list-fns)
+![](https://img.shields.io/badge/dependencies-zero-green)
+![](https://img.shields.io/bundlephobia/min/list-fns)
+
 This library contains higher order functions for doing common list operations to enable a more declarative style when working with lists.
 
 **Example**
