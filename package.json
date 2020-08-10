@@ -1,0 +1,38 @@
+{
+  "name": "list-fns",
+  "version": "0.1.0",
+  "description": "A collection of utility functions to be used with .map, .filter, .sort and .reduce",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "index.ts"
+  ],
+  "scripts": {
+    "build": "tsc --removeComments",
+    "declaration": "tsc --declaration --emitDeclarationOnly",
+    "docs": "node codegen/generate-docs",
+    "test": "ava --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asbjornh/list-fns.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/asbjornh/list-fns/issues"
+  },
+  "homepage": "https://github.com/asbjornh/list-fns#readme",
+  "devDependencies": {
+    "@code-to-json/core": "1.0.0-rc.49",
+    "@code-to-json/formatter": "1.0.0-rc.51",
+    "@code-to-json/utils-node": "1.0.0-rc.44",
+    "@code-to-json/utils-ts": "1.0.0-rc.43",
+    "@typescript-eslint/eslint-plugin": "^3.8.0",
+    "@typescript-eslint/parser": "^3.8.0",
+    "ava": "^3.11.1",
+    "eslint": "^7.6.0",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  }
+}
