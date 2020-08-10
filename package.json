@@ -7,8 +7,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc --removeComments",
-    "declaration": "tsc --declaration --emitDeclarationOnly",
+    "build:js": "tsc --removeComments",
+    "build:declaration": "tsc --declaration --emitDeclarationOnly",
+    "build": "npm run build:js && npm run build:declaration",
     "docs": "node codegen/generate-docs",
     "test": "ava --verbose"
   },
