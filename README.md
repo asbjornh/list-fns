@@ -53,6 +53,7 @@ list.slice().sort();
   <ul>
     <li><a href="#by">by</a></li>
 <li><a href="#byProperty">byProperty</a></li>
+<li><a href="#countBy">countBy</a></li>
 <li><a href="#exclude">exclude</a></li>
 <li><a href="#excludeBy">excludeBy</a></li>
 <li><a href="#excludeByProperty">excludeByProperty</a></li>
@@ -139,6 +140,36 @@ Sort the elements by the property value at the provided key (can also be an arra
 const byProperty = <TObject extends object, TKey extends keyof TObject>(
   key: TKey
 ) => by<TObject>(get(key))
+```
+
+  <p>
+</details>
+
+### <div id="countBy"></div> countBy
+
+
+```ts
+countBy: <T>(func: (el: T) => boolean) => (acc: number, el: T) => number
+```
+
+
+Use with: `reduce` 
+
+Counts the number of times `func` returned `true` for the list elements. A number must be passed to the second argument of `reduce` .
+
+```ts
+["a", "a", "b"].reduce(countBy(el => el === "a"), 0); // Returns 2
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const countBy = <T>(func: (el: T) => boolean) => (acc: number, el: T) =>
+  acc + (func(el) ? 1 : 0)
 ```
 
   <p>

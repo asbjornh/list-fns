@@ -342,3 +342,13 @@ export const partition = <T>(func: (el: T) => boolean) => (
     a1 = acc[1] || [];
   return func(el) ? [a0.concat(el), a1] : [a0, a1.concat(el)];
 };
+
+/** Use with: `reduce`
+ *
+ * Counts the number of times `func` returned `true` for the list elements. A number must be passed to the second argument of `reduce`.
+```ts
+["a", "a", "b"].reduce(countBy(el => el === "a"), 0); // Returns 2
+```
+ */
+export const countBy = <T>(func: (el: T) => boolean) => (acc: number, el: T) =>
+  acc + (func(el) ? 1 : 0);

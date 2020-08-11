@@ -1,6 +1,6 @@
 {
   "name": "list-fns",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A collection of utility functions to be used with .map, .filter, .sort and .reduce",
   "main": "dist/index.js",
   "files": [
@@ -9,7 +9,7 @@
   "scripts": {
     "build:js": "tsc --removeComments",
     "build:declaration": "tsc --declaration --emitDeclarationOnly",
-    "build": "npm run build:js && npm run build:declaration",
+    "build": "npm run build:js && npm run build:declaration && npm run docs",
     "docs": "node codegen/generate-docs",
     "test": "ava --verbose"
   },

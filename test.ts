@@ -25,6 +25,7 @@ import {
   minByProperty,
   groupBy,
   partition,
+  countBy,
 } from "./index";
 
 test("isDefined", t => {
@@ -279,4 +280,14 @@ test("partition mapping", t => {
     .map(els => els.map(el => el.age));
   t.deepEqual(old, [80]);
   t.deepEqual(young, [10]);
+});
+
+test("countBy", t => {
+  t.is(
+    2,
+    ["a", "a", "b"].reduce(
+      countBy(el => el === "a"),
+      0
+    )
+  );
 });
