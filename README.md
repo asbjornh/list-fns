@@ -4,7 +4,7 @@
 ![](https://img.shields.io/badge/dependencies-zero-green)
 ![](https://img.shields.io/bundlephobia/min/list-fns)
 
-This library contains higher order functions for doing common list operations to enable a more declarative style when working with lists.
+This library contains higher order functions for doing common list operations to enable a more declarative style when working with lists. File size is prioritized over performance (several of the functions are O(n^2)); this is not recommended for use with very large datasets.
 
 **Example**
 
@@ -54,6 +54,9 @@ list.slice().sort();
     <li><a href="#by">by</a></li>
 <li><a href="#byProperty">byProperty</a></li>
 <li><a href="#countBy">countBy</a></li>
+<li><a href="#duplicates">duplicates</a></li>
+<li><a href="#duplicatesBy">duplicatesBy</a></li>
+<li><a href="#duplicatesByProperty">duplicatesByProperty</a></li>
 <li><a href="#exclude">exclude</a></li>
 <li><a href="#excludeBy">excludeBy</a></li>
 <li><a href="#excludeByProperty">excludeByProperty</a></li>
@@ -170,6 +173,102 @@ Counts the number of times `func` returned `true` for the list elements. A numbe
 ```ts
 const countBy = <T>(func: (el: T) => boolean) => (acc: number, el: T) =>
   acc + (func(el) ? 1 : 0)
+```
+
+  <p>
+</details>
+
+### <div id="duplicates"></div> duplicates
+
+
+```ts
+duplicates: (el: unknown, _: number, list: unknown[]) => boolean
+```
+
+
+Use with: `filter` 
+
+Returns duplicates
+
+```ts
+[1, 1, 1, 2].filter(duplicates); // Returns [1, 1, 1]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const duplicates = duplicatesBy(el => el)
+```
+
+  <p>
+</details>
+
+### <div id="duplicatesBy"></div> duplicatesBy
+
+
+```ts
+duplicatesBy: <T>(func: (el: T) => unknown) => (el: T, _: number, list: T[]) => boolean
+```
+
+
+Use with: `filter` 
+
+Returns all duplicates (compared by the provided function)
+
+```ts
+[{ a: 1 }, { a : 1 }, { a: 2 }].filter(duplicatesBy(el => el.a)); // Returns [{ a: 1 }, { a: 1 }]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const duplicatesBy = <T>(func: (el: T) => unknown) => (
+  el: T,
+  _: number,
+  list: T[]
+) => numberOfOccurencesBy(list, el, func) > 1
+```
+
+  <p>
+</details>
+
+### <div id="duplicatesByProperty"></div> duplicatesByProperty
+
+
+```ts
+duplicatesByProperty: <TObject extends object, TKey extends keyof TObject>(key: TKey) => (el: TObject, _: number, list: TObject[]) => boolean
+```
+
+
+Use with: `filter` 
+
+Returns duplicates by comparing the `key` property of the elements
+
+```ts
+[{ a: 1 }, { a: 1 }].filter(duplicatesByProperty('a')); // Return [{ a: 1 }, { a: 1 }]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const duplicatesByProperty = <
+  TObject extends object,
+  TKey extends keyof TObject
+>(
+  key: TKey
+) => duplicatesBy<TObject>(get(key))
 ```
 
   <p>
