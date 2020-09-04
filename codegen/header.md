@@ -4,7 +4,7 @@
 ![](https://img.shields.io/badge/dependencies-zero-green)
 ![](https://img.shields.io/bundlephobia/min/list-fns)
 
-This library contains higher order functions for doing common list operations to enable a more declarative style when working with lists.
+This library contains higher order functions for doing common list operations to enable a more declarative style when working with lists. File size is prioritized over performance (several of the functions are O(n^2)); this is not recommended for use with very large datasets.
 
 **Example**
 
