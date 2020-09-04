@@ -26,11 +26,34 @@ import {
   groupBy,
   partition,
   countBy,
+  duplicates,
+  duplicatesBy,
+  duplicatesByProperty,
 } from "./index";
 
 test("isDefined", t => {
   t.deepEqual([1, 2].filter(isDefined), [1, 2]);
   t.deepEqual([1, 2, undefined, 3].filter(isDefined), [1, 2, 3]);
+});
+
+test("duplicates", t => {
+  t.deepEqual([1, 1, 1], [1, 1, 2, 1].filter(duplicates));
+  t.deepEqual(["a", "a"], ["a", "a", "b"].filter(duplicates));
+});
+
+test("duplicatesBy", t => {
+  t.deepEqual(
+    [{ a: 1 }, { a: 1 }],
+    [{ a: 1 }, { a: 1 }, { a: 2 }].filter(duplicatesBy(el => el.a))
+  );
+  t.deepEqual([1, 1.5], [1, 1.5, 2].filter(duplicatesBy(Math.floor)));
+});
+
+test("duplicatesByProperty", t => {
+  t.deepEqual(
+    [{ a: 1 }, { a: 1 }],
+    [{ a: 1 }, { a: 1 }, { a: 2 }].filter(duplicatesByProperty("a"))
+  );
 });
 
 test("unique", t => {

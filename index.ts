@@ -8,6 +8,57 @@
 export const isDefined = <T>(x: T | undefined): x is T =>
   typeof x !== "undefined";
 
+const findIndex = <T>(list: T[], pred: (a: T) => boolean) => {
+  for (let i = 0; i < list.length; i++) {
+    if (pred(list[i])) return i;
+  }
+  return -1;
+};
+
+const numberOfOccurencesBy = <T, U>(list: T[], el: T, map: (a: T) => U) => {
+  let n = 0;
+  for (let i = 0; i < list.length; i++) {
+    if (map(list[i]) === map(el)) n++;
+  }
+  return n;
+};
+
+/** Use with: `filter`
+ * 
+ * Returns all duplicates (compared by the provided function)
+```ts
+[{ a: 1 }, { a : 1 }, { a: 2 }].filter(duplicatesBy(el => el.a)); // Returns [{ a: 1 }, { a: 1 }]
+```
+ */
+export const duplicatesBy = <T>(func: (el: T) => unknown) => (
+  el: T,
+  _: number,
+  list: T[]
+) => numberOfOccurencesBy(list, el, func) > 1;
+
+/** Use with: `filter`
+ * 
+ * Returns duplicates
+```ts
+[1, 1, 1, 2].filter(duplicates); // Returns [1, 1, 1]
+```
+ */
+export const duplicates = duplicatesBy(el => el);
+
+/** Use with: `filter`
+ *
+ * Returns duplicates by comparing the `key` property of the elements
+```ts
+[{ a: 1 }, { a: 1 }].filter(duplicatesByProperty('a')); // Return [{ a: 1 }, { a: 1 }]
+```
+ */
+export const duplicatesByProperty = <
+  TObject extends object,
+  TKey extends keyof TObject
+>(
+  key: TKey
+) => duplicatesBy<TObject>(get(key));
+
 /** Use with: `filter`
  * 
  * Removes duplicates by comparing elements according to the provided function
@@ -233,13 +284,6 @@ export const sumByProperty = <
 >(
   key: TKey
 ) => (acc: number, el: TObject) => acc + el[key];
-
-const findIndex = <T>(list: T[], pred: (a: T) => boolean) => {
-  for (let i = 0; i < list.length; i++) {
-    if (pred(list[i])) return i;
-  }
-  return -1;
-};
 
 /** Use with: `reduce`
  * 
