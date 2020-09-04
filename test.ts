@@ -37,114 +37,113 @@ test("isDefined", t => {
 });
 
 test("duplicates", t => {
-  t.deepEqual([1, 1, 1], [1, 1, 2, 1].filter(duplicates));
-  t.deepEqual(["a", "a"], ["a", "a", "b"].filter(duplicates));
+  t.deepEqual([1, 1, 2, 1, 2, 3].filter(duplicates), [1, 1, 2, 1, 2]);
+  t.deepEqual(["a", "a", "b"].filter(duplicates), ["a", "a"]);
 });
 
 test("duplicatesBy", t => {
-  t.deepEqual(
-    [{ a: 1 }, { a: 1 }],
-    [{ a: 1 }, { a: 1 }, { a: 2 }].filter(duplicatesBy(el => el.a))
-  );
-  t.deepEqual([1, 1.5], [1, 1.5, 2].filter(duplicatesBy(Math.floor)));
+  t.deepEqual([{ a: 1 }, { a: 1 }, { a: 2 }].filter(duplicatesBy(el => el.a)), [
+    { a: 1 },
+    { a: 1 },
+  ]);
+  t.deepEqual([1, 1.5, 2].filter(duplicatesBy(Math.floor)), [1, 1.5]);
 });
 
 test("duplicatesByProperty", t => {
   t.deepEqual(
-    [{ a: 1 }, { a: 1 }],
-    [{ a: 1 }, { a: 1 }, { a: 2 }].filter(duplicatesByProperty("a"))
+    [{ a: 1 }, { a: 1 }, { a: 2 }].filter(duplicatesByProperty("a")),
+    [{ a: 1 }, { a: 1 }]
   );
 });
 
 test("unique", t => {
-  t.deepEqual([1, 2], [1, 1, 2].filter(unique));
-  t.deepEqual(["a", "b"], ["a", "a", "b"].filter(unique));
+  t.deepEqual([1, 1, 2].filter(unique), [1, 2]);
+  t.deepEqual(["a", "a", "b"].filter(unique), ["a", "b"]);
 });
 
 test("uniqueBy", t => {
-  t.deepEqual([{ a: 1 }], [{ a: 1 }, { a: 1 }].filter(uniqueBy(el => el.a)));
-  t.deepEqual([1], [1, 1.5].filter(uniqueBy(Math.floor)));
+  t.deepEqual([{ a: 1 }, { a: 1 }].filter(uniqueBy(el => el.a)), [{ a: 1 }]);
+  t.deepEqual([1, 1.5].filter(uniqueBy(Math.floor)), [1]);
 });
 
 test("uniqueByProperty", t => {
-  t.deepEqual([{ a: 1 }], [{ a: 1 }, { a: 1 }].filter(uniqueByProperty("a")));
+  t.deepEqual([{ a: 1 }, { a: 1 }].filter(uniqueByProperty("a")), [{ a: 1 }]);
 });
 
 test("intersection", t => {
-  t.deepEqual([], [1, 2, 3].filter(intersection([])));
-  t.deepEqual([2, 3], [1, 2, 3].filter(intersection([2, 3, 4])));
+  t.deepEqual([1, 2, 3].filter(intersection([])), []);
+  t.deepEqual([1, 2, 3].filter(intersection([2, 3, 4])), [2, 3]);
 });
 
 test("intersectionBy", t => {
   t.deepEqual(
-    [],
     [{ a: 1 }, { a: 2 }, { a: 3 }].filter(
       intersectionBy(el => el.a, [] as { a: number }[])
-    )
+    ),
+    []
   );
   t.deepEqual(
-    [{ a: 2 }, { a: 3 }],
     [{ a: 1 }, { a: 2 }, { a: 3 }].filter(
       intersectionBy(el => el.a, [{ a: 2 }, { a: 3 }, { a: 4 }])
-    )
+    ),
+    [{ a: 2 }, { a: 3 }]
   );
 });
 
 test("intersectionByProperty", t => {
   t.deepEqual(
-    [],
     [{ a: 1 }, { a: 2 }, { a: 3 }].filter(
       intersectionByProperty("a", [] as { a: number }[])
-    )
+    ),
+    []
   );
   t.deepEqual(
-    [{ a: 2 }, { a: 3 }],
     [{ a: 1 }, { a: 2 }, { a: 3 }].filter(
       intersectionByProperty("a", [{ a: 2 }, { a: 3 }, { a: 4 }])
-    )
+    ),
+    [{ a: 2 }, { a: 3 }]
   );
 });
 
 test("exclude", t => {
-  t.deepEqual([1, 2], [1, 2].filter(exclude([])));
-  t.deepEqual([2], [1, 2, 1, 1].filter(exclude([1])));
+  t.deepEqual([1, 2].filter(exclude([])), [1, 2]);
+  t.deepEqual([1, 2, 1, 1].filter(exclude([1])), [2]);
 });
 
 test("excludeBy", t => {
-  t.deepEqual([2], [1, 1.5, 2].filter(excludeBy(Math.floor, [1])));
+  t.deepEqual([1, 1.5, 2].filter(excludeBy(Math.floor, [1])), [2]);
   t.deepEqual(
-    [{ a: 1 }, { a: 2 }],
-    [{ a: 1 }, { a: 2 }].filter(excludeBy(el => el.a, [] as { a: number }[]))
+    [{ a: 1 }, { a: 2 }].filter(excludeBy(el => el.a, [] as { a: number }[])),
+    [{ a: 1 }, { a: 2 }]
   );
   t.deepEqual(
-    [{ a: 3 }, { a: 4 }],
     [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }].filter(
       excludeBy(el => el.a, [{ a: 1 }, { a: 2 }])
-    )
+    ),
+    [{ a: 3 }, { a: 4 }]
   );
 });
 
 test("excludeByProperty", t => {
   t.deepEqual(
-    [{ a: 1 }, { a: 2 }],
-    [{ a: 1 }, { a: 2 }].filter(excludeByProperty("a", [] as { a: number }[]))
+    [{ a: 1 }, { a: 2 }].filter(excludeByProperty("a", [] as { a: number }[])),
+    [{ a: 1 }, { a: 2 }]
   );
   t.deepEqual(
-    [{ a: 3 }, { a: 4 }],
     [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }].filter(
       excludeByProperty("a", [{ a: 1 }, { a: 2 }])
-    )
+    ),
+    [{ a: 3 }, { a: 4 }]
   );
 });
 
 test("by", t => {
-  // TODO: Expected first
-  t.deepEqual([1.5, 1, 2.5, 2], [2.5, 2, 1.5, 1].sort(by(Math.floor)));
-  t.deepEqual([{ a: 1 }, { a: 2 }], [{ a: 2 }, { a: 1 }].sort(by(el => el.a)));
-  t.deepEqual(
-    [{ a: { b: 1 } }, { a: { b: 2 } }],
-    [{ a: { b: 2 } }, { a: { b: 1 } }].sort(by(get("a", "b")))
-  );
+  t.deepEqual([2.5, 2, 1.5, 1].sort(by(Math.floor)), [1.5, 1, 2.5, 2]);
+  t.deepEqual([{ a: 2 }, { a: 1 }].sort(by(el => el.a)), [{ a: 1 }, { a: 2 }]);
+  t.deepEqual([{ a: { b: 2 } }, { a: { b: 1 } }].sort(by(get("a", "b"))), [
+    { a: { b: 1 } },
+    { a: { b: 2 } },
+  ]);
 });
 
 test("by boolean", t => {
@@ -162,16 +161,16 @@ test("by boolean", t => {
 });
 
 test("byProperty", t => {
-  t.deepEqual([{ a: 1 }, { a: 2 }], [{ a: 2 }, { a: 1 }].sort(byProperty("a")));
+  t.deepEqual([{ a: 2 }, { a: 1 }].sort(byProperty("a")), [{ a: 1 }, { a: 2 }]);
   t.deepEqual(
     [
-      ["a", 1],
       ["a", 2],
-    ],
+      ["a", 1],
+    ].sort(byProperty(1)),
     [
-      ["a", 2],
       ["a", 1],
-    ].sort(byProperty(1))
+      ["a", 2],
+    ]
   );
 });
 
@@ -190,84 +189,80 @@ test("byProperty boolean", t => {
 });
 
 test("get", t => {
-  t.deepEqual([1, 2], [{ a: 1 }, { a: 2 }].map(get("a")));
+  t.deepEqual([{ a: 1 }, { a: 2 }].map(get("a")), [1, 2]);
   t.deepEqual(
-    [1, 2],
     [
       ["a", 1],
       ["a", 2],
-    ].map(get(1))
+    ].map(get(1)),
+    [1, 2]
   );
 });
 
 test("get 2", t => {
-  t.deepEqual([1, 2], [{ a: { b: 1 } }, { a: { b: 2 } }].map(get("a", "b")));
+  t.deepEqual([{ a: { b: 1 } }, { a: { b: 2 } }].map(get("a", "b")), [1, 2]);
 });
 
 test("get 3", t => {
   t.deepEqual(
-    [2, 4],
-    [{ a: { b: [1, 2] } }, { a: { b: [3, 4] } }].map(get("a", "b", 1))
+    [{ a: { b: [1, 2] } }, { a: { b: [3, 4] } }].map(get("a", "b", 1)),
+    [2, 4]
   );
 });
 
 test("sum", t => {
-  t.is(6, [1, 2, 3].reduce(sum));
-  t.is(2, [2].reduce(sum));
-  t.is(4, [2].reduce(sum, 2));
+  t.is([1, 2, 3].reduce(sum), 6);
+  t.is([2].reduce(sum), 2);
+  t.is([2].reduce(sum, 2), 4);
 });
 
 test("sumBy", t => {
-  t.is(6, [1.9, 2.9, 3.9].reduce(sumBy(Math.floor)));
+  t.is([1.9, 2.9, 3.9].reduce(sumBy(Math.floor)), 6);
   t.is(
-    3,
     [{ a: 1 }, { a: 2 }].reduce(
       sumBy(el => el.a),
       0
-    )
+    ),
+    3
   );
 });
 
 test("sumByProperty", t => {
-  t.is(3, [{ a: 1 }, { a: 2 }].reduce(sumByProperty("a"), 0));
+  t.is([{ a: 1 }, { a: 2 }].reduce(sumByProperty("a"), 0), 3);
 });
 
 test("max", t => {
-  t.is(4, [1, 2, 3, 4].reduce(max));
+  t.is([1, 2, 3, 4].reduce(max), 4);
 });
 
 test("maxBy", t => {
-  t.is(3.1, [3.1, 3.5].reduce(maxBy(Math.floor)));
-  t.deepEqual(
-    { a: 3 },
-    [{ a: 1 }, { a: 2 }, { a: 3 }].reduce(maxBy(el => el.a))
-  );
+  t.is([3.1, 3.5].reduce(maxBy(Math.floor)), 3.1);
+  t.deepEqual([{ a: 1 }, { a: 2 }, { a: 3 }].reduce(maxBy(el => el.a)), {
+    a: 3,
+  });
 });
 
 test("maxByProperty", t => {
-  t.deepEqual(
-    { a: 3 },
-    [{ a: 1 }, { a: 2 }, { a: 3 }].reduce(maxByProperty("a"))
-  );
+  t.deepEqual([{ a: 1 }, { a: 2 }, { a: 3 }].reduce(maxByProperty("a")), {
+    a: 3,
+  });
 });
 
 test("min", t => {
-  t.is(1, [1, 2, 3, 4].reduce(min));
+  t.is([1, 2, 3, 4].reduce(min), 1);
 });
 
 test("minBy", t => {
-  t.is(1.5, [1.5, 1].reduce(minBy(Math.floor)));
-  t.deepEqual(
-    { a: 1 },
-    [{ a: 1 }, { a: 2 }, { a: 3 }].reduce(minBy(el => el.a))
-  );
+  t.is([1.5, 1].reduce(minBy(Math.floor)), 1.5);
+  t.deepEqual([{ a: 1 }, { a: 2 }, { a: 3 }].reduce(minBy(el => el.a)), {
+    a: 1,
+  });
 });
 
 test("minByProperty", t => {
-  t.deepEqual(
-    { a: 1 },
-    [{ a: 1 }, { a: 2 }, { a: 3 }].reduce(minByProperty("a"))
-  );
+  t.deepEqual([{ a: 1 }, { a: 2 }, { a: 3 }].reduce(minByProperty("a")), {
+    a: 1,
+  });
 });
 
 test("groupBy", t => {
@@ -307,10 +302,10 @@ test("partition mapping", t => {
 
 test("countBy", t => {
   t.is(
-    2,
     ["a", "a", "b"].reduce(
       countBy(el => el === "a"),
       0
-    )
+    ),
+    2
   );
 });
