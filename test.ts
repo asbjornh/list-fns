@@ -5,6 +5,12 @@ import {
   uniqueBy,
   unique,
   uniqueByProperty,
+  is,
+  isBy,
+  propertyIs,
+  isnt,
+  isntBy,
+  propertyIsnt,
   intersection,
   intersectionBy,
   intersectionByProperty,
@@ -68,6 +74,40 @@ test("uniqueBy", t => {
 
 test("uniqueByProperty", t => {
   t.deepEqual([{ a: 1 }, { a: 1 }].filter(uniqueByProperty("a")), [{ a: 1 }]);
+});
+
+test("is", t => {
+  t.deepEqual([1, 2, 3].find(is(1)), 1);
+  t.deepEqual([1, 2, 3].filter(is(1)), [1]);
+});
+
+test("isBy", t => {
+  t.deepEqual([{ a: 1 }, { a: 2 }].find(isBy(el => el.a, 2)), { a: 2 });
+  t.deepEqual([{ a: 1 }, { a: 2 }].filter(isBy(el => el.a, 2)), [{ a: 2 }]);
+
+  t.deepEqual([1, 1.5, 2].filter(isBy(Math.floor, 1)), [1, 1.5]);
+});
+
+test("propertyIs", t => {
+  t.deepEqual([{ a: 1 }, { a: 2 }].find(propertyIs("a", 2)), { a: 2 });
+  t.deepEqual([{ a: 1 }, { a: 2 }].filter(propertyIs("a", 2)), [{ a: 2 }]);
+});
+
+test("isnt", t => {
+  t.deepEqual([1, 2, 3].find(isnt(1)), 2);
+  t.deepEqual([1, 2, 2].filter(isnt(1)), [2, 2]);
+});
+
+test("isntBy", t => {
+  t.deepEqual([{ a: 1 }, { a: 2 }].find(isntBy(el => el.a, 2)), { a: 1 });
+  t.deepEqual([{ a: 1 }, { a: 2 }].filter(isntBy(el => el.a, 2)), [{ a: 1 }]);
+
+  t.deepEqual([1, 1.5, 2].filter(isntBy(Math.floor, 1)), [2]);
+});
+
+test("propertyIsnt", t => {
+  t.deepEqual([{ a: 1 }, { a: 2 }].find(propertyIsnt("a", 2)), { a: 1 });
+  t.deepEqual([{ a: 1 }, { a: 2 }].filter(propertyIsnt("a", 2)), [{ a: 1 }]);
 });
 
 test("intersection", t => {

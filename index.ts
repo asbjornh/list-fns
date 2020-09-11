@@ -95,6 +95,77 @@ export const uniqueByProperty = <
   key: TKey
 ) => uniqueBy<TObject>(get(key));
 
+/** Use with: `find`, `filter`
+ *
+ * Returns `true` for elements that are equal to `value`
+```ts
+[1,2,3].find(is(1)); // Returns 1
+[1,1,2].filter(is(1)); // Returns [1, 1]
+```
+ */
+export const is = <T>(value: T) => (el: T) => el === value;
+
+/** Use with: `find`, `filter`
+ *
+ * Applies `func` to elements and returns `true` if they are equal to `value`
+```ts
+[{ a: 1 }, { a: 2 }].find(isBy(el => el.a, 2)); // Returns { a: 2 }
+[{ a: 1 }, { a: 2 }].filter(isBy(el => el.a, 2)); // Returns [{ a: 2 }]
+```
+ */
+export const isBy = <T, U>(func: (el: T) => U, value: U) => (el: T) =>
+  func(el) === value;
+
+/** Use with: `find`, `filter`
+ *
+ * Returns `true` for elements where `element[key]` equals `value`
+```ts
+[{ a: 1 }, { a: 2 }].find(propertyIs("a", 2)); // Returns { a: 2 }
+[{ a: 1 }, { a: 2 }].filter(propertyIs("a", 2)) // Returns [{ a: 2 }]
+```
+ */
+export const propertyIs = <TObject extends object, TKey extends keyof TObject>(
+  key: TKey,
+  value: TObject[TKey]
+) => isBy(get(key), value);
+
+/** Use with: `find`, `filter`
+ *
+ * Returns `true` for elements that are not equal to `value`
+```ts
+[1,2,3].find(isnt(1)); // Returns 2
+[1,2,2].filter(isnt(1)); // Returns [2,2]
+```
+ */
+export const isnt = <T>(value: T) => (el: T) => el !== value;
+
+/** Use with: `find`, `filter`
+ *
+ * Applies `func` to elements and returns `true` for elements that are not equal to `value`
+```ts
+[{ a: 1 }, { a: 2 }].find(isntBy(el => el.a, 2)); // Returns { a: 1 }
+[{ a: 1 }, { a: 2 }].filter(isntBy(el => el.a, 2)); // Returns [{ a: 1 }]
+```
+ */
+export const isntBy = <T, U>(func: (el: T) => U, value: U) => (el: T) =>
+  func(el) !== value;
+
+/** Use with: `find`, `filter`
+ *
+ * Returns `true` for elements where `element[key]` does not equal `value`
+```ts
+[{ a: 1 }, { a: 2 }].find(propertyIsnt("a", 2)); // Returns { a: 1 }
+[{ a: 1 }, { a: 2 }].filter(propertyIsnt("a", 2)); // Returns [{ a: 1 }]
+```
+ */
+export const propertyIsnt = <
+  TObject extends object,
+  TKey extends keyof TObject
+>(
+  key: TKey,
+  value: TObject[TKey]
+) => isntBy(get(key), value);
+
 /** Use with: `filter`
  *
  * Returns a list of elements that are present in both lists

@@ -65,7 +65,11 @@ list.slice().sort();
 <li><a href="#intersection">intersection</a></li>
 <li><a href="#intersectionBy">intersectionBy</a></li>
 <li><a href="#intersectionByProperty">intersectionByProperty</a></li>
+<li><a href="#is">is</a></li>
+<li><a href="#isBy">isBy</a></li>
 <li><a href="#isDefined">isDefined</a></li>
+<li><a href="#isnt">isnt</a></li>
+<li><a href="#isntBy">isntBy</a></li>
 <li><a href="#max">max</a></li>
 <li><a href="#maxBy">maxBy</a></li>
 <li><a href="#maxByProperty">maxByProperty</a></li>
@@ -73,6 +77,8 @@ list.slice().sort();
 <li><a href="#minBy">minBy</a></li>
 <li><a href="#minByProperty">minByProperty</a></li>
 <li><a href="#partition">partition</a></li>
+<li><a href="#propertyIs">propertyIs</a></li>
+<li><a href="#propertyIsnt">propertyIsnt</a></li>
 <li><a href="#sum">sum</a></li>
 <li><a href="#sumBy">sumBy</a></li>
 <li><a href="#sumByProperty">sumByProperty</a></li>
@@ -558,6 +564,67 @@ const intersectionByProperty = <
   <p>
 </details>
 
+### <div id="is"></div> is
+
+
+```ts
+is: <T>(value: T) => (el: T) => boolean
+```
+
+
+Use with: `find` , `filter` 
+
+Returns `true` for elements that are equal to `value` 
+
+```ts
+[1,2,3].find(is(1)); // Returns 1
+[1,1,2].filter(is(1)); // Returns [1, 1]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const is = <T>(value: T) => (el: T) => el === value
+```
+
+  <p>
+</details>
+
+### <div id="isBy"></div> isBy
+
+
+```ts
+isBy: <T, U>(func: (el: T) => U, value: U) => (el: T) => boolean
+```
+
+
+Use with: `find` , `filter` 
+
+Applies `func` to elements and returns `true` if they are equal to `value` 
+
+```ts
+[{ a: 1 }, { a: 2 }].find(isBy(el => el.a, 2)); // Returns { a: 2 }
+[{ a: 1 }, { a: 2 }].filter(isBy(el => el.a, 2)); // Returns [{ a: 2 }]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const isBy = <T, U>(func: (el: T) => U, value: U) => (el: T) =>
+  func(el) === value
+```
+
+  <p>
+</details>
+
 ### <div id="isDefined"></div> isDefined
 
 
@@ -583,6 +650,67 @@ Removes elements that are `undefined`
 ```ts
 const isDefined = <T>(x: T | undefined): x is T =>
   typeof x !== "undefined"
+```
+
+  <p>
+</details>
+
+### <div id="isnt"></div> isnt
+
+
+```ts
+isnt: <T>(value: T) => (el: T) => boolean
+```
+
+
+Use with: `find` , `filter` 
+
+Returns `true` for elements that are not equal to `value` 
+
+```ts
+[1,2,3].find(isnt(1)); // Returns 2
+[1,2,2].filter(isnt(1)); // Returns [2,2]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const isnt = <T>(value: T) => (el: T) => el !== value
+```
+
+  <p>
+</details>
+
+### <div id="isntBy"></div> isntBy
+
+
+```ts
+isntBy: <T, U>(func: (el: T) => U, value: U) => (el: T) => boolean
+```
+
+
+Use with: `find` , `filter` 
+
+Applies `func` to elements and returns `true` for elements that are not equal to `value` 
+
+```ts
+[{ a: 1 }, { a: 2 }].find(isntBy(el => el.a, 2)); // Returns { a: 1 }
+[{ a: 1 }, { a: 2 }].filter(isntBy(el => el.a, 2)); // Returns [{ a: 1 }]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const isntBy = <T, U>(func: (el: T) => U, value: U) => (el: T) =>
+  func(el) !== value
 ```
 
   <p>
@@ -806,6 +934,75 @@ const partition = <T>(func: (el: T) => boolean) => (
     a1 = acc[1] || [];
   return func(el) ? [a0.concat(el), a1] : [a0, a1.concat(el)];
 }
+```
+
+  <p>
+</details>
+
+### <div id="propertyIs"></div> propertyIs
+
+
+```ts
+propertyIs: <TObject extends object, TKey extends keyof TObject>(key: TKey, value: TObject[TKey]) => (el: TObject) => boolean
+```
+
+
+Use with: `find` , `filter` 
+
+Returns `true` for elements where `element[key]` equals `value` 
+
+```ts
+[{ a: 1 }, { a: 2 }].find(propertyIs("a", 2)); // Returns { a: 2 }
+[{ a: 1 }, { a: 2 }].filter(propertyIs("a", 2)) // Returns [{ a: 2 }]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const propertyIs = <TObject extends object, TKey extends keyof TObject>(
+  key: TKey,
+  value: TObject[TKey]
+) => isBy(get(key), value)
+```
+
+  <p>
+</details>
+
+### <div id="propertyIsnt"></div> propertyIsnt
+
+
+```ts
+propertyIsnt: <TObject extends object, TKey extends keyof TObject>(key: TKey, value: TObject[TKey]) => (el: TObject) => boolean
+```
+
+
+Use with: `find` , `filter` 
+
+Returns `true` for elements where `element[key]` does not equal `value` 
+
+```ts
+[{ a: 1 }, { a: 2 }].find(propertyIsnt("a", 2)); // Returns { a: 1 }
+[{ a: 1 }, { a: 2 }].filter(propertyIsnt("a", 2)); // Returns [{ a: 1 }]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const propertyIsnt = <
+  TObject extends object,
+  TKey extends keyof TObject
+>(
+  key: TKey,
+  value: TObject[TKey]
+) => isntBy(get(key), value)
 ```
 
   <p>
