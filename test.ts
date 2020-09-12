@@ -35,6 +35,9 @@ import {
   duplicates,
   duplicatesBy,
   duplicatesByProperty,
+  isOneOf,
+  isOneOfBy,
+  propertyIsOneOf,
 } from "./index";
 
 test("isDefined", t => {
@@ -349,4 +352,35 @@ test("countBy", t => {
     2
   );
   t.is(["a", "a", "b"].reduce(countBy(is("a")), 0), 2);
+});
+
+test("isOneOf", t => {
+  t.deepEqual([1, 1, 2, 2, 3].filter(isOneOf([2, 3])), [2, 2, 3]);
+});
+
+test("isOneOfBy", t => {
+  t.deepEqual(
+    [{ a: 1 }, { a: 2 }, { a: 3 }].find(isOneOfBy(el => el.a, [2, 3])),
+    { a: 2 }
+  );
+  t.deepEqual(
+    [{ a: 1 }, { a: 2 }, { a: 3 }].filter(isOneOfBy(el => el.a, [2, 3])),
+    [{ a: 2 }, { a: 3 }]
+  );
+  t.deepEqual([1, 1.5, 2, 3].filter(isOneOfBy(Math.floor, [1, 2])), [
+    1,
+    1.5,
+    2,
+  ]);
+});
+
+test("propertyIsOneOf", t => {
+  t.deepEqual(
+    [{ a: 1 }, { a: 2 }, { a: 3 }].find(propertyIsOneOf("a", [2, 3])),
+    { a: 2 }
+  );
+  t.deepEqual(
+    [{ a: 1 }, { a: 2 }, { a: 3 }].filter(propertyIsOneOf("a", [2, 3])),
+    [{ a: 2 }, { a: 3 }]
+  );
 });

@@ -206,6 +206,46 @@ export const intersectionByProperty = <
   list: TObject[]
 ) => intersectionBy(get(key), list);
 
+/**Use with: `find`, `filter`
+ * 
+ * Alias for `intersection`. Returns `true` for elements that exist in the provided list
+```ts
+[1,1,2,2,3].filter(isOneOf([2,3])); // Returns [2, 2, 3]
+```
+*/
+export const isOneOf = intersection;
+
+/** Use with: `find`, `filter`
+ *
+ * Returns `true` for elements where `func(element)` exists in `list`
+```ts
+[{ a: 1 }, { a: 2 }, { a: 3 }].find(isOneOfBy(el => el.a, [2, 3]));
+// ^ Returns { a: 2 }
+[{ a: 1 }, { a: 2 }, { a: 3 }].filter(isOneOfBy(el => el.a, [2, 3]));
+// ^ Returns [{ a: 2 }, { a: 3 }]
+```
+ */
+export const isOneOfBy = <T, U>(func: (el: T) => U, list: U[]) => (el: T) =>
+  findIndex(list, a => a === func(el)) !== -1;
+
+/** Use with: `find`, `filter`
+ * 
+ * Returns `true` for elements where `element[key]` exists in `list`
+```ts
+[{ a: 1 }, { a: 2 }, { a: 3 }].find(propertyIsOneOf("a", [2, 3]));
+// ^ Returns { a: 2 }
+[{ a: 1 }, { a: 2 }, { a: 3 }].filter(propertyIsOneOf("a", [2, 3]));
+// ^ Returns [{ a: 2 }, { a: 3 }]
+```
+ */
+export const propertyIsOneOf = <
+  TObject extends object,
+  TKey extends keyof TObject
+>(
+  key: TKey,
+  list: TObject[TKey][]
+) => isOneOfBy(get(key), list);
+
 /** Use with: `filter`
  * 
  * Removes the provided elements from the list
@@ -458,7 +498,7 @@ export const partition = <T>(func: (el: T) => boolean) => (
 
 /** Use with: `reduce`
  *
- * Returns the number of times `func` returned `true` for the list elements. A number must be passed to the second argument of `reduce`. Can be combined with boolean-returning functions like `is`, `isnt`, `propertyIs` or `propIsOneOf`.
+ * Returns the number of times `func` returned `true` for the list elements. A number must be passed to the second argument of `reduce`. Can be combined with boolean-returning functions like `is`, `isnt`, `propertyIs` or `propertyIsOneOf`.
 ```ts
 ["a", "a", "b"].reduce(countBy(el => el === "a"), 0); // Returns 2
 ["a", "a", "b"].reduce(countBy(is("a")), 0); // Returns 2

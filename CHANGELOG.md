@@ -5,9 +5,12 @@
 - Adds new functions:
   - `is`
   - `isBy`
-  - `propertyIs`
+  - `isOneOf`
+  - `isOneOfBy`
   - `isnt`
   - `isntBy`
+  - `propertyIs`
+  - `propertyIsOneOf`
   - `propertyIsnt`
 
 ## 0.3.0
