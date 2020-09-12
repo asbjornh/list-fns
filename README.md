@@ -68,8 +68,12 @@ list.slice().sort();
 <li><a href="#is">is</a></li>
 <li><a href="#isBy">isBy</a></li>
 <li><a href="#isDefined">isDefined</a></li>
+<li><a href="#isOneOf">isOneOf</a></li>
+<li><a href="#isOneOfBy">isOneOfBy</a></li>
 <li><a href="#isnt">isnt</a></li>
 <li><a href="#isntBy">isntBy</a></li>
+<li><a href="#isntOneOf">isntOneOf</a></li>
+<li><a href="#isntOneOfBy">isntOneOfBy</a></li>
 <li><a href="#max">max</a></li>
 <li><a href="#maxBy">maxBy</a></li>
 <li><a href="#maxByProperty">maxByProperty</a></li>
@@ -78,7 +82,9 @@ list.slice().sort();
 <li><a href="#minByProperty">minByProperty</a></li>
 <li><a href="#partition">partition</a></li>
 <li><a href="#propertyIs">propertyIs</a></li>
+<li><a href="#propertyIsOneOf">propertyIsOneOf</a></li>
 <li><a href="#propertyIsnt">propertyIsnt</a></li>
+<li><a href="#propertyIsntOneOf">propertyIsntOneOf</a></li>
 <li><a href="#sum">sum</a></li>
 <li><a href="#sumBy">sumBy</a></li>
 <li><a href="#sumByProperty">sumByProperty</a></li>
@@ -98,7 +104,7 @@ by: <T>(func: (el: T) => any) => (a: T, b: T) => 0 | 1 | -1
 
 Use with: `sort` 
 
-Sort the elements by the return values of the provided function. Supports sorting by boolean values (elements that are `true` first).
+Sort the elements by `func(element)` . Supports sorting by boolean values (elements that are `true` first).
 
 ```ts
 [{ a: 2 }, { a: 1 }].sort(by(el => el.a)); // Returns [{ a: 1 }, { a: 2 }]
@@ -132,7 +138,7 @@ byProperty: <TObject extends object, TKey extends keyof TObject>(key: TKey) => (
 
 Use with: `sort` 
 
-Sort the elements by the property value at the provided key (can also be an array index). Supports sorting by boolean values (elements that are `true` first).
+Sort the elements by `element[key]` (can also be an array index). Supports sorting by boolean values (elements that are `true` first).
 
 ```ts
 [{ a: 2 }, { a: 1 }].sort(byProperty('a')); // Returns [{ a: 1 }, { a: 2 }]
@@ -164,10 +170,11 @@ countBy: <T>(func: (el: T) => boolean) => (acc: number, el: T) => number
 
 Use with: `reduce` 
 
-Counts the number of times `func` returned `true` for the list elements. A number must be passed to the second argument of `reduce` .
+Returns the number of times `func` returned `true` for the list elements. A number must be passed to the second argument of `reduce` . Can be combined with boolean-returning functions like `is` , `isnt` , `propertyIs` or `propertyIsOneOf` .
 
 ```ts
 ["a", "a", "b"].reduce(countBy(el => el === "a"), 0); // Returns 2
+["a", "a", "b"].reduce(countBy(is("a")), 0); // Returns 2
 
 ```
 
@@ -223,7 +230,7 @@ duplicatesBy: <T>(func: (el: T) => unknown) => (el: T, _: number, list: T[]) => 
 
 Use with: `filter` 
 
-Returns all duplicates (compared by the provided function)
+Returns all duplicates compared by `func(element)` 
 
 ```ts
 [{ a: 1 }, { a : 1 }, { a: 2 }].filter(duplicatesBy(el => el.a)); // Returns [{ a: 1 }, { a: 1 }]
@@ -256,7 +263,7 @@ duplicatesByProperty: <TObject extends object, TKey extends keyof TObject>(key: 
 
 Use with: `filter` 
 
-Returns duplicates by comparing the `key` property of the elements
+Returns duplicates compared by `element[key]` 
 
 ```ts
 [{ a: 1 }, { a: 1 }].filter(duplicatesByProperty('a')); // Return [{ a: 1 }, { a: 1 }]
@@ -320,7 +327,7 @@ excludeBy: <T>(func: (el: T) => unknown, list: T[]) => (el: T) => boolean
 
 Use with: `filter` 
 
-Removes the provided elements from the list compared by running `func` on each element
+Removes the provided elements from the list compared by running `func` on elements in both lists
 
 ```ts
 [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }]
@@ -392,7 +399,7 @@ get: {
 
 Use with `map` or `filter` 
 
-Returns the value at `key` (can also be an array index). Supports up to three keys of depth.
+Returns `element[key]` (can also be an array index). Supports up to three keys of depth.
 
 ```ts
 [{ a: 1 }, { a: 2 }].map(get('a')); // Returns [1, 2]
@@ -504,7 +511,7 @@ intersectionBy: <T>(func: (el: T) => unknown, list: T[]) => (el: T) => boolean
 
 Use with: `filter` 
 
-Returns a list of elements that are present in both lists compared by running `func` on each element
+Returns a list of elements that are present in both lists compared by running `func` on elements in both lists
 
 ```ts
 [{ a: 1 }, { a: 2 }, { a: 3 }]
@@ -604,7 +611,7 @@ isBy: <T, U>(func: (el: T) => U, value: U) => (el: T) => boolean
 
 Use with: `find` , `filter` 
 
-Applies `func` to elements and returns `true` if they are equal to `value` 
+Returns `true` for elements where `func(element)` equals `value` 
 
 ```ts
 [{ a: 1 }, { a: 2 }].find(isBy(el => el.a, 2)); // Returns { a: 2 }
@@ -655,6 +662,68 @@ const isDefined = <T>(x: T | undefined): x is T =>
   <p>
 </details>
 
+### <div id="isOneOf"></div> isOneOf
+
+
+```ts
+isOneOf: <T>(list: T[]) => (el: T) => boolean
+```
+
+
+Use with: `find` , `filter` 
+
+Alias for `intersection` . Returns `true` for elements that exist in the provided list
+
+```ts
+[1,1,2,2,3].filter(isOneOf([2,3])); // Returns [2, 2, 3]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const isOneOf = intersection
+```
+
+  <p>
+</details>
+
+### <div id="isOneOfBy"></div> isOneOfBy
+
+
+```ts
+isOneOfBy: <T, U>(func: (el: T) => U, list: U[]) => (el: T) => boolean
+```
+
+
+Use with: `find` , `filter` 
+
+Returns `true` for elements where `func(element)` exists in `list` 
+
+```ts
+[{ a: 1 }, { a: 2 }, { a: 3 }].find(isOneOfBy(el => el.a, [2, 3]));
+// ^ Returns { a: 2 }
+[{ a: 1 }, { a: 2 }, { a: 3 }].filter(isOneOfBy(el => el.a, [2, 3]));
+// ^ Returns [{ a: 2 }, { a: 3 }]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const isOneOfBy = <T, U>(func: (el: T) => U, list: U[]) => (el: T) =>
+  findIndex(list, a => a === func(el)) !== -1
+```
+
+  <p>
+</details>
+
 ### <div id="isnt"></div> isnt
 
 
@@ -695,7 +764,7 @@ isntBy: <T, U>(func: (el: T) => U, value: U) => (el: T) => boolean
 
 Use with: `find` , `filter` 
 
-Applies `func` to elements and returns `true` for elements that are not equal to `value` 
+Returns `true` for elements where `func(element)` does not equal `value` 
 
 ```ts
 [{ a: 1 }, { a: 2 }].find(isntBy(el => el.a, 2)); // Returns { a: 1 }
@@ -711,6 +780,68 @@ Applies `func` to elements and returns `true` for elements that are not equal to
 ```ts
 const isntBy = <T, U>(func: (el: T) => U, value: U) => (el: T) =>
   func(el) !== value
+```
+
+  <p>
+</details>
+
+### <div id="isntOneOf"></div> isntOneOf
+
+
+```ts
+isntOneOf: <T>(list: T[]) => (el: T) => boolean
+```
+
+
+Use with: `find` , `filter` 
+
+Alias for `exclude` . Returns `true` for elements that do not exist in the provided list
+
+```ts
+[1,1,2,2,3].filter(isntOneOf([2,3])); // Returns [1, 1]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const isntOneOf = exclude
+```
+
+  <p>
+</details>
+
+### <div id="isntOneOfBy"></div> isntOneOfBy
+
+
+```ts
+isntOneOfBy: <T, U>(func: (el: T) => U, list: U[]) => (el: T) => boolean
+```
+
+
+Use with: `find` , `filter` 
+
+Returns `true` for elements where `func(element)` exists in `list` 
+
+```ts
+[{ a: 1 }, { a: 2 }, { a: 3 }].find(isntOneOfBy(el => el.a, [2, 3]));
+// ^ Returns { a: 1 }
+[{ a: 1 }, { a: 2 }, { a: 3 }].filter(isntOneOfBy(el => el.a, [2, 3]));
+// ^ Returns [{ a: 1 }]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const isntOneOfBy = <T, U>(func: (el: T) => U, list: U[]) => (el: T) =>
+  findIndex(list, a => a === func(el)) === -1
 ```
 
   <p>
@@ -755,7 +886,7 @@ maxBy: <T>(func: (el: T) => number) => (acc: T, el: T) => T
 
 Use with: `reduce` 
 
-Returns the element that returned the largest value from `func` 
+Returns the largest element by comparing `func(element)` 
 
 ```ts
 [{ a: 1 }, { a: 2 }, { a: 3 }].reduce(maxBy(el => el.a)); // Returns { a: 3 }
@@ -785,7 +916,7 @@ maxByProperty: <TObject extends object, TKey extends keyof TObject>(key: TKey) =
 
 Use with: `reduce` 
 
-Returns the element that has the largest value at `key` 
+Returns the largest element by comparing `element[key]` 
 
 ```ts
 [{ a: 1 }, { a: 2 }, { a: 3 }].reduce(maxByProperty("a")); // Returns { a: 3 }
@@ -848,7 +979,7 @@ minBy: <T>(func: (el: T) => number) => (acc: T, el: T) => T
 
 Use with: `reduce` 
 
-Returns the element that returned the smallest value from `func` 
+Returns the smallest element by comparing `func(element)` 
 
 ```ts
 [{ a: 1 }, { a: 2 }, { a: 3 }].reduce(minBy(el => el.a)); // Returns { a: 1 }
@@ -878,7 +1009,7 @@ minByProperty: <TObject extends object, TKey extends keyof TObject>(key: TKey) =
 
 Use with: `reduce` 
 
-Returns the element that has the smallest value at `key` 
+Returns the smallest element by comparing `element[key]` 
 
 ```ts
 [{ a: 1 }, { a: 2 }, { a: 3 }].reduce(minByProperty("a")); // Returns { a: 1 }
@@ -972,6 +1103,44 @@ const propertyIs = <TObject extends object, TKey extends keyof TObject>(
   <p>
 </details>
 
+### <div id="propertyIsOneOf"></div> propertyIsOneOf
+
+
+```ts
+propertyIsOneOf: <TObject extends object, TKey extends keyof TObject>(key: TKey, list: TObject[TKey][]) => (el: TObject) => boolean
+```
+
+
+Use with: `find` , `filter` 
+
+Returns `true` for elements where `element[key]` exists in `list` 
+
+```ts
+[{ a: 1 }, { a: 2 }, { a: 3 }].find(propertyIsOneOf("a", [2, 3]));
+// ^ Returns { a: 2 }
+[{ a: 1 }, { a: 2 }, { a: 3 }].filter(propertyIsOneOf("a", [2, 3]));
+// ^ Returns [{ a: 2 }, { a: 3 }]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const propertyIsOneOf = <
+  TObject extends object,
+  TKey extends keyof TObject
+>(
+  key: TKey,
+  list: TObject[TKey][]
+) => isOneOfBy(get(key), list)
+```
+
+  <p>
+</details>
+
 ### <div id="propertyIsnt"></div> propertyIsnt
 
 
@@ -1003,6 +1172,44 @@ const propertyIsnt = <
   key: TKey,
   value: TObject[TKey]
 ) => isntBy(get(key), value)
+```
+
+  <p>
+</details>
+
+### <div id="propertyIsntOneOf"></div> propertyIsntOneOf
+
+
+```ts
+propertyIsntOneOf: <TObject extends object, TKey extends keyof TObject>(key: TKey, list: TObject[TKey][]) => (el: TObject) => boolean
+```
+
+
+Use with: `find` , `filter` 
+
+Returns `true` for elements where `element[key]` exists in `list` 
+
+```ts
+[{ a: 1 }, { a: 2 }, { a: 3 }].find(propertyIsntOneOf("a", [2, 3]));
+// ^ Returns { a: 1 }
+[{ a: 1 }, { a: 2 }, { a: 3 }].filter(propertyIsntOneOf("a", [2, 3]));
+// ^ Returns [{ a: 1 }]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const propertyIsntOneOf = <
+  TObject extends object,
+  TKey extends keyof TObject
+>(
+  key: TKey,
+  list: TObject[TKey][]
+) => isntOneOfBy(get(key), list)
 ```
 
   <p>
@@ -1050,7 +1257,7 @@ sumBy: {
 
 Use with: `reduce` 
 
-Sums the values returned from the provided function. If the list elements aren't numbers, a number must be passed as the second argument to `reduce` .
+Sums the values by applying `func` to elements. If the list elements aren't numbers, a number must be passed as the second argument to `reduce` .
 
 ```ts
 [{ a: 1 }, { a: 2 }].reduce(sumBy(el => el.a), 0); // Returns 3
@@ -1083,7 +1290,7 @@ sumByProperty: <TObject extends { [key: string]: number; }, TKey extends keyof T
 
 Use with: `reduce` 
 
-Sums the values at `key` for all elements. A number must be passed to the second argument of `reduce` .
+Sums the values of `element[key]` for all elements. A number must be passed to the second argument of `reduce` .
 
 ```ts
 [{ a: 1 }, { a: 2 }].reduce(sumByProperty('a'), 0); // Returns 3
@@ -1146,7 +1353,7 @@ uniqueBy: <T>(func: (el: T) => unknown) => (el: T, index: number, list: T[]) => 
 
 Use with: `filter` 
 
-Removes duplicates by comparing elements according to the provided function
+Removes duplicates compared by `func(element)` 
 
 ```ts
 [{ a: 1 }, { a : 1 }].filter(uniqueBy(el => el.a)); // Returns [{ a: 1 }]
@@ -1179,7 +1386,7 @@ uniqueByProperty: <TObject extends object, TKey extends keyof TObject>(key: TKey
 
 Use with: `filter` 
 
-Removes duplicates by comparing the `key` property of the elements
+Removes duplicates compared by `element[key]` 
 
 ```ts
 [{ a: 1 }, { a: 1 }].filter(uniqueByProperty('a')); // Return [{ a: 1 }]

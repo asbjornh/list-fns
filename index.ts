@@ -285,6 +285,46 @@ export const excludeByProperty = <
   list: TObject[]
 ) => excludeBy(get(key), list);
 
+/**Use with: `find`, `filter`
+ * 
+ * Alias for `exclude`. Returns `true` for elements that do not exist in the provided list
+```ts
+[1,1,2,2,3].filter(isntOneOf([2,3])); // Returns [1, 1]
+```
+*/
+export const isntOneOf = exclude;
+
+/** Use with: `find`, `filter`
+ *
+ * Returns `true` for elements where `func(element)` exists in `list`
+```ts
+[{ a: 1 }, { a: 2 }, { a: 3 }].find(isntOneOfBy(el => el.a, [2, 3]));
+// ^ Returns { a: 1 }
+[{ a: 1 }, { a: 2 }, { a: 3 }].filter(isntOneOfBy(el => el.a, [2, 3]));
+// ^ Returns [{ a: 1 }]
+```
+ */
+export const isntOneOfBy = <T, U>(func: (el: T) => U, list: U[]) => (el: T) =>
+  findIndex(list, a => a === func(el)) === -1;
+
+/** Use with: `find`, `filter`
+ * 
+ * Returns `true` for elements where `element[key]` exists in `list`
+```ts
+[{ a: 1 }, { a: 2 }, { a: 3 }].find(propertyIsntOneOf("a", [2, 3]));
+// ^ Returns { a: 1 }
+[{ a: 1 }, { a: 2 }, { a: 3 }].filter(propertyIsntOneOf("a", [2, 3]));
+// ^ Returns [{ a: 1 }]
+```
+ */
+export const propertyIsntOneOf = <
+  TObject extends object,
+  TKey extends keyof TObject
+>(
+  key: TKey,
+  list: TObject[TKey][]
+) => isntOneOfBy(get(key), list);
+
 /**Use with: `sort`
  * 
  * Sort the elements by `func(element)`. Supports sorting by boolean values (elements that are `true` first).

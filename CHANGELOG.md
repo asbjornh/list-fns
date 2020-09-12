@@ -2,6 +2,7 @@
 
 ## 1.0.0
 
+- No breaking changes.
 - Adds new functions:
   - `is`
   - `isBy`
@@ -9,9 +10,12 @@
   - `isOneOfBy`
   - `isnt`
   - `isntBy`
+  - `isntOneOf`
+  - `isntOneOfBy`
   - `propertyIs`
   - `propertyIsOneOf`
   - `propertyIsnt`
+  - `propertyIsntOneOf`
 
 ## 0.3.0
 

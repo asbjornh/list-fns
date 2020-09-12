@@ -38,6 +38,9 @@ import {
   isOneOf,
   isOneOfBy,
   propertyIsOneOf,
+  isntOneOf,
+  isntOneOfBy,
+  propertyIsntOneOf,
 } from "./index";
 
 test("isDefined", t => {
@@ -382,5 +385,31 @@ test("propertyIsOneOf", t => {
   t.deepEqual(
     [{ a: 1 }, { a: 2 }, { a: 3 }].filter(propertyIsOneOf("a", [2, 3])),
     [{ a: 2 }, { a: 3 }]
+  );
+});
+
+test("isntOneOf", t => {
+  t.deepEqual([1, 1, 2, 2, 3].filter(isntOneOf([2, 3])), [1, 1]);
+});
+
+test("isntOneOfBy", t => {
+  t.deepEqual(
+    [{ a: 1 }, { a: 2 }, { a: 3 }].find(isntOneOfBy(el => el.a, [2, 3])),
+    { a: 1 }
+  );
+  t.deepEqual(
+    [{ a: 1 }, { a: 2 }, { a: 3 }].filter(isntOneOfBy(el => el.a, [2, 3])),
+    [{ a: 1 }]
+  );
+});
+
+test("propertyIsntOneOf", t => {
+  t.deepEqual(
+    [{ a: 1 }, { a: 2 }, { a: 3 }].find(propertyIsntOneOf("a", [2, 3])),
+    { a: 1 }
+  );
+  t.deepEqual(
+    [{ a: 1 }, { a: 2 }, { a: 3 }].filter(propertyIsntOneOf("a", [2, 3])),
+    [{ a: 1 }]
   );
 });
