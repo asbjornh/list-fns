@@ -25,7 +25,7 @@ const numberOfOccurencesBy = <T, U>(list: T[], el: T, map: (a: T) => U) => {
 
 /** Use with: `filter`
  * 
- * Returns all duplicates (compared by the provided function)
+ * Returns all duplicates compared by `func(element)`
 ```ts
 [{ a: 1 }, { a : 1 }, { a: 2 }].filter(duplicatesBy(el => el.a)); // Returns [{ a: 1 }, { a: 1 }]
 ```
@@ -47,7 +47,7 @@ export const duplicates = duplicatesBy(el => el);
 
 /** Use with: `filter`
  *
- * Returns duplicates by comparing the `key` property of the elements
+ * Returns duplicates compared by `element[key]`
 ```ts
 [{ a: 1 }, { a: 1 }].filter(duplicatesByProperty('a')); // Return [{ a: 1 }, { a: 1 }]
 ```
@@ -61,7 +61,7 @@ export const duplicatesByProperty = <
 
 /** Use with: `filter`
  * 
- * Removes duplicates by comparing elements according to the provided function
+ * Removes duplicates compared by `func(element)`
 ```ts
 [{ a: 1 }, { a : 1 }].filter(uniqueBy(el => el.a)); // Returns [{ a: 1 }]
 ```
@@ -83,7 +83,7 @@ export const unique = uniqueBy(el => el);
 
 /** Use with: `filter`
  *
- * Removes duplicates by comparing the `key` property of the elements
+ * Removes duplicates compared by `element[key]`
 ```ts
 [{ a: 1 }, { a: 1 }].filter(uniqueByProperty('a')); // Return [{ a: 1 }]
 ```
@@ -107,7 +107,7 @@ export const is = <T>(value: T) => (el: T) => el === value;
 
 /** Use with: `find`, `filter`
  *
- * Applies `func` to elements and returns `true` if they are equal to `value`
+ * Returns `true` for elements where `func(element)` equals `value`
 ```ts
 [{ a: 1 }, { a: 2 }].find(isBy(el => el.a, 2)); // Returns { a: 2 }
 [{ a: 1 }, { a: 2 }].filter(isBy(el => el.a, 2)); // Returns [{ a: 2 }]
@@ -141,7 +141,7 @@ export const isnt = <T>(value: T) => (el: T) => el !== value;
 
 /** Use with: `find`, `filter`
  *
- * Applies `func` to elements and returns `true` for elements that are not equal to `value`
+ * Returns `true` for elements where `func(element)` does not equal `value`
 ```ts
 [{ a: 1 }, { a: 2 }].find(isntBy(el => el.a, 2)); // Returns { a: 1 }
 [{ a: 1 }, { a: 2 }].filter(isntBy(el => el.a, 2)); // Returns [{ a: 1 }]
@@ -178,7 +178,7 @@ export const intersection = <T>(list: T[]) => (el: T) =>
 
 /** Use with: `filter`
  *
- * Returns a list of elements that are present in both lists compared by running `func` on each element
+ * Returns a list of elements that are present in both lists compared by running `func` on elements in both lists
 ```ts
 [{ a: 1 }, { a: 2 }, { a: 3 }]
   .filter(intersectionBy(el => el.a, [{ a: 2 }, { a: 3 }, { a: 4 }]));
@@ -218,7 +218,7 @@ export const exclude = <T>(list: T[]) => (el: T) =>
 
 /** Use with: `filter`
  * 
- * Removes the provided elements from the list compared by running `func` on each element
+ * Removes the provided elements from the list compared by running `func` on elements in both lists
 ```ts
 [{ a: 1 }, { a: 2 }, { a: 3 }, { a: 4 }]
   .filter(excludeBy(el => el.a, [{ a: 1 }, { a: 2 }]));
@@ -247,7 +247,7 @@ export const excludeByProperty = <
 
 /**Use with: `sort`
  * 
- * Sort the elements by the return values of the provided function. Supports sorting by boolean values (elements that are `true` first).
+ * Sort the elements by `func(element)`. Supports sorting by boolean values (elements that are `true` first).
 ```ts
 [{ a: 2 }, { a: 1 }].sort(by(el => el.a)); // Returns [{ a: 1 }, { a: 2 }]
 ```
@@ -261,7 +261,7 @@ export const by = <T>(func: (el: T) => any) => (a: T, b: T) => {
 
 /** Use with: `sort`
  *
- * Sort the elements by the property value at the provided key (can also be an array index). Supports sorting by boolean values (elements that are `true` first).
+ * Sort the elements by `element[key]` (can also be an array index). Supports sorting by boolean values (elements that are `true` first).
 ```ts
 [{ a: 2 }, { a: 1 }].sort(byProperty('a')); // Returns [{ a: 1 }, { a: 2 }]
 [["a", 2], ["a", 1]].sort(byProperty(1)); // Returns [["a", 1], ["a", 2]]
@@ -273,7 +273,7 @@ export const byProperty = <TObject extends object, TKey extends keyof TObject>(
 
 /** Use with `map` or `filter`
  * 
- * Returns the value at `key` (can also be an array index). Supports up to three keys of depth.
+ * Returns `element[key]` (can also be an array index). Supports up to three keys of depth.
 ```ts
 [{ a: 1 }, { a: 2 }].map(get('a')); // Returns [1, 2]
 [["a", 1], ["a", 2]].map(get(1)); // Returns [1, 2]
@@ -323,7 +323,7 @@ export const sum = (acc: number, element: number) => acc + element;
 
 /** Use with: `reduce`
  * 
- * Sums the values returned from the provided function. If the list elements aren't numbers, a number must be passed as the second argument to `reduce`.
+ * Sums the values by applying `func` to elements. If the list elements aren't numbers, a number must be passed as the second argument to `reduce`.
 ```ts
 [{ a: 1 }, { a: 2 }].reduce(sumBy(el => el.a), 0); // Returns 3
 [1.5, 2.5].reduce(sumBy(Math.floor)); // Returns 3
@@ -339,12 +339,10 @@ export function sumBy<T>(func: (el: T | number) => number) {
   return (acc: number, el: T | number) =>
     typeof el === "number" ? func(acc) + func(el) : acc + func(el);
 }
-// export const sumBy = <T>(func: (el: T) => number) => (acc: T | number, el: T) =>
-//   (typeof acc === "number" ? acc : func(acc)) + func(el);
 
 /** Use with: `reduce`
  *
- * Sums the values at `key` for all elements. A number must be passed to the second argument of `reduce`.
+ * Sums the values of `element[key]` for all elements. A number must be passed to the second argument of `reduce`.
 ```ts
 [{ a: 1 }, { a: 2 }].reduce(sumByProperty('a'), 0); // Returns 3
 ```
@@ -367,7 +365,7 @@ export const max = (acc: number, el: number) => Math.max(acc, el);
 
 /** Use with: `reduce`
  * 
- * Returns the element that returned the largest value from `func`
+ * Returns the largest element by comparing `func(element)`
 ```ts
 [{ a: 1 }, { a: 2 }, { a: 3 }].reduce(maxBy(el => el.a)); // Returns { a: 3 }
 ```
@@ -377,7 +375,7 @@ export const maxBy = <T>(func: (el: T) => number) => (acc: T, el: T) =>
 
 /** Use with: `reduce`
  * 
- * Returns the element that has the largest value at `key`
+ * Returns the largest element by comparing `element[key]`
 ```ts
 [{ a: 1 }, { a: 2 }, { a: 3 }].reduce(maxByProperty("a")); // Returns { a: 3 }
 ```
@@ -400,7 +398,7 @@ export const min = (acc: number, el: number) => Math.min(acc, el);
 
 /** Use with: `reduce`
  * 
- * Returns the element that returned the smallest value from `func`
+ * Returns the smallest element by comparing `func(element)`
 ```ts
 [{ a: 1 }, { a: 2 }, { a: 3 }].reduce(minBy(el => el.a)); // Returns { a: 1 }
 ```
@@ -410,7 +408,7 @@ export const minBy = <T>(func: (el: T) => number) => (acc: T, el: T) =>
 
 /** Use with: `reduce`
  * 
- * Returns the element that has the smallest value at `key`
+ * Returns the smallest element by comparing `element[key]`
 ```ts
 [{ a: 1 }, { a: 2 }, { a: 3 }].reduce(minByProperty("a")); // Returns { a: 1 }
 ```
@@ -460,9 +458,10 @@ export const partition = <T>(func: (el: T) => boolean) => (
 
 /** Use with: `reduce`
  *
- * Counts the number of times `func` returned `true` for the list elements. A number must be passed to the second argument of `reduce`.
+ * Returns the number of times `func` returned `true` for the list elements. A number must be passed to the second argument of `reduce`. Can be combined with boolean-returning functions like `is`, `isnt`, `propertyIs` or `propIsOneOf`.
 ```ts
 ["a", "a", "b"].reduce(countBy(el => el === "a"), 0); // Returns 2
+["a", "a", "b"].reduce(countBy(is("a")), 0); // Returns 2
 ```
  */
 export const countBy = <T>(func: (el: T) => boolean) => (acc: number, el: T) =>

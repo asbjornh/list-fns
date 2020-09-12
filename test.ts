@@ -348,4 +348,5 @@ test("countBy", t => {
     ),
     2
   );
+  t.is(["a", "a", "b"].reduce(countBy(is("a")), 0), 2);
 });
