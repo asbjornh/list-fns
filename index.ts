@@ -530,12 +530,14 @@ export const minByProperty = <
 ); // Returns { old: [{ age: 80 }], young: [{ age: 10 }]}
 ```
  */
-export const groupBy = <K extends string, V>(func: (el: V) => K) => (
-  acc: Record<K, V[]>,
-  el: V
-): Record<K, V[]> => {
-  const groupName = func(el),
-    group: V[] = acc[groupName] || [];
+export const groupBy = <K extends string, V>(
+  func: (el: V) => K | undefined
+) => (acc: Record<K, V[]>, el: V): Record<K, V[]> => {
+  const groupName = func(el);
+  if (!groupName) return acc;
+  const group: V[] = acc[groupName] || [];
+  return Object.assign({}, acc, { [groupName]: group.concat(el) });
+};
   return Object.assign({}, acc, { [groupName]: group.concat(el) });
 };
 

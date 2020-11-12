@@ -335,6 +335,12 @@ test("groupBy", t => {
     {} as Record<"old" | "young", { age: number }[]>
   );
   t.deepEqual(obj, { old: [{ age: 80 }], young: [{ age: 10 }] });
+
+  const dict = [{ name: "a" }, { name: "a" }, { name: "b" }, {}].reduce(
+    groupBy(el => el.name),
+    {}
+  );
+  t.deepEqual(dict, { a: [{ name: "a" }, { name: "a" }], b: [{ name: "b" }] });
 });
 
 test("partition", t => {
