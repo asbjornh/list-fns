@@ -8,6 +8,16 @@
 export const isDefined = <T>(x: T | undefined): x is T =>
   typeof x !== "undefined";
 
+/** Use with: `map`
+ * 
+ * Replaces list elements that are `undefined` with `fallback`
+```ts
+[1, undefined, 2].map(or(0)); // Returns [1, 0, 2]
+```
+ */
+export const or = <T>(fallback: T) => (x: T | undefined): T =>
+  isDefined(x) ? x : fallback;
+
 const findIndex = <T>(list: T[], pred: (a: T) => boolean) => {
   for (let i = 0; i < list.length; i++) {
     if (pred(list[i])) return i;

@@ -2,6 +2,7 @@ import test from "ava";
 
 import {
   isDefined,
+  or,
   uniqueBy,
   unique,
   uniqueByProperty,
@@ -46,6 +47,11 @@ import {
 test("isDefined", t => {
   t.deepEqual([1, 2].filter(isDefined), [1, 2]);
   t.deepEqual([1, 2, undefined, 3].filter(isDefined), [1, 2, 3]);
+});
+
+test("or", t => {
+  t.deepEqual([1, 2].map(or(0)), [1, 2]);
+  t.deepEqual([1, 2, undefined, 3].map(or(0)), [1, 2, 0, 3]);
 });
 
 test("duplicates", t => {
