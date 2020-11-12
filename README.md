@@ -53,6 +53,7 @@ list.slice().sort();
   <ul>
     <li><a href="#by">by</a></li>
 <li><a href="#byProperty">byProperty</a></li>
+<li><a href="#byValue">byValue</a></li>
 <li><a href="#countBy">countBy</a></li>
 <li><a href="#duplicates">duplicates</a></li>
 <li><a href="#duplicatesBy">duplicatesBy</a></li>
@@ -62,6 +63,7 @@ list.slice().sort();
 <li><a href="#excludeByProperty">excludeByProperty</a></li>
 <li><a href="#get">get</a></li>
 <li><a href="#groupBy">groupBy</a></li>
+<li><a href="#groupByProperty">groupByProperty</a></li>
 <li><a href="#intersection">intersection</a></li>
 <li><a href="#intersectionBy">intersectionBy</a></li>
 <li><a href="#intersectionByProperty">intersectionByProperty</a></li>
@@ -80,6 +82,7 @@ list.slice().sort();
 <li><a href="#min">min</a></li>
 <li><a href="#minBy">minBy</a></li>
 <li><a href="#minByProperty">minByProperty</a></li>
+<li><a href="#or">or</a></li>
 <li><a href="#partition">partition</a></li>
 <li><a href="#propertyIs">propertyIs</a></li>
 <li><a href="#propertyIsOneOf">propertyIsOneOf</a></li>
@@ -155,6 +158,36 @@ Sort the elements by `element[key]` (can also be an array index). Supports sorti
 const byProperty = <TObject extends object, TKey extends keyof TObject>(
   key: TKey
 ) => by<TObject>(get(key))
+```
+
+  <p>
+</details>
+
+### <div id="byValue"></div> byValue
+
+
+```ts
+byValue: (a: number, b: number) => 0 | 1 | -1
+```
+
+
+Use with: `sort` 
+
+Sort a list of numbers. This is useful because javascript sorts numbers as string, meaning that [25, 100] results in [100, 25] since "2" is greater than "1"
+
+```ts
+[100, 25].sort(); // Returns [100, 25]
+[100, 25].sort(byValue); // Returns [25, 100]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const byValue = (a: number, b: number) => (a < b ? -1 : a > b ? 1 : 0)
 ```
 
   <p>
@@ -436,7 +469,7 @@ export function get<
 
 
 ```ts
-groupBy: <K extends string, V>(func: (el: V) => K) => (acc: Record<K, V[]>, el: V) => Record<K, V[]>
+groupBy: <K extends string, V>(func: (el: V) => K | undefined) => (acc: Record<K, V[]>, el: V) => Record<K, V[]>
 ```
 
 
@@ -458,12 +491,54 @@ Given a key-returning function, returns an object of lists of elements. A second
   <p>
     
 ```ts
-const groupBy = <K extends string, V>(func: (el: V) => K) => (
-  acc: Record<K, V[]>,
-  el: V
-): Record<K, V[]> => {
-  const groupName = func(el),
-    group: V[] = acc[groupName] || [];
+const groupBy = <K extends string, V>(
+  func: (el: V) => K | undefined
+) => (acc: Record<K, V[]>, el: V): Record<K, V[]> => {
+  const groupName = func(el);
+  if (!groupName) return acc;
+  const group: V[] = acc[groupName] || [];
+  return Object.assign({}, acc, { [groupName]: group.concat(el) });
+}
+```
+
+  <p>
+</details>
+
+### <div id="groupByProperty"></div> groupByProperty
+
+
+```ts
+groupByProperty: <K extends keyof V, V extends { [key: string]: any; }>(key: K) => (acc: Record<V[K], V[]>, el: V) => Record<V[K], V[]>
+```
+
+
+Use with: `reduce` 
+
+Given a property name, returns an object of lists of elements, grouped by the values for that property. A second argument must be passed to `reduce` . For javascript an empty object is enough. For typescript an object with properties or a type cast is required.
+
+```ts
+[{ name: "Jane" }, { name: "John" }].reduce(
+  groupByProperty("name"),
+  {}
+); // Returns { Jane: [{ name: "Jane" }], John: [{ name: "John" }] }
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const groupByProperty = <
+  K extends keyof V,
+  V extends { [key: string]: any }
+>(
+  key: K
+) => (acc: Record<V[K], V[]>, el: V): Record<V[K], V[]> => {
+  const groupName = el[key];
+  if (!groupName) return acc;
+  const group: V[] = acc[groupName] || [];
   return Object.assign({}, acc, { [groupName]: group.concat(el) });
 }
 ```
@@ -1028,6 +1103,36 @@ const minByProperty = <
 >(
   key: TKey
 ) => (acc: TObject, el: TObject) => (el[key] < acc[key] ? el : acc)
+```
+
+  <p>
+</details>
+
+### <div id="or"></div> or
+
+
+```ts
+or: <T>(fallback: T) => (x: T | undefined) => T
+```
+
+
+Use with: `map` 
+
+Replaces list elements that are `undefined` with `fallback` 
+
+```ts
+[1, undefined, 2].map(or(0)); // Returns [1, 0, 2]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const or = <T>(fallback: T) => (x: T | undefined): T =>
+  isDefined(x) ? x : fallback
 ```
 
   <p>
