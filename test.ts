@@ -32,6 +32,7 @@ import {
   minBy,
   minByProperty,
   groupBy,
+  groupByProperty,
   partition,
   countBy,
   duplicates,
@@ -338,6 +339,14 @@ test("groupBy", t => {
 
   const dict = [{ name: "a" }, { name: "a" }, { name: "b" }, {}].reduce(
     groupBy(el => el.name),
+    {}
+  );
+  t.deepEqual(dict, { a: [{ name: "a" }, { name: "a" }], b: [{ name: "b" }] });
+});
+
+test("groupByProperty", t => {
+  const dict = [{ name: "a" }, { name: "a" }, { name: "b" }, {}].reduce(
+    groupByProperty("name"),
     {}
   );
   t.deepEqual(dict, { a: [{ name: "a" }, { name: "a" }], b: [{ name: "b" }] });

@@ -335,7 +335,7 @@ export const propertyIsntOneOf = <
   list: TObject[TKey][]
 ) => isntOneOfBy(get(key), list);
 
-/**Use with: `sort`
+/** Use with: `sort`
  * 
  * Sort the elements by `func(element)`. Supports sorting by boolean values (elements that are `true` first).
 ```ts
@@ -538,6 +538,26 @@ export const groupBy = <K extends string, V>(
   const group: V[] = acc[groupName] || [];
   return Object.assign({}, acc, { [groupName]: group.concat(el) });
 };
+
+/** Use with: `reduce`
+ *
+ * Given a property name, returns an object of lists of elements, grouped by the values for that property. A second argument must be passed to `reduce`. For javascript an empty object is enough. For typescript an object with properties or a type cast is required.
+```ts
+[{ name: "Jane" }, { name: "John" }].reduce(
+  groupByProperty("name"),
+  {}
+); // Returns { Jane: [{ name: "Jane" }], John: [{ name: "John" }] }
+```
+ */
+export const groupByProperty = <
+  K extends keyof V,
+  V extends { [key: string]: any }
+>(
+  key: K
+) => (acc: Record<V[K], V[]>, el: V): Record<V[K], V[]> => {
+  const groupName = el[key];
+  if (!groupName) return acc;
+  const group: V[] = acc[groupName] || [];
   return Object.assign({}, acc, { [groupName]: group.concat(el) });
 };
 
