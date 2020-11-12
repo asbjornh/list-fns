@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0
+
+- Adds `byValue`
+- Adds `groupByProperty`
+- Adds `or`
+- Adds support for returning `undefined` in `groupBy`.
+
 ## 1.0.0
 
 - No breaking changes.
