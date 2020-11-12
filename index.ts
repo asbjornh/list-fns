@@ -350,6 +350,16 @@ export const by = <T>(func: (el: T) => any) => (a: T, b: T) => {
 };
 
 /** Use with: `sort`
+ * 
+ * Sort a list of numbers. This is useful because javascript sorts numbers as string, meaning that [25, 100] results in [100, 25] since "2" is greater than "1"
+```ts
+[100, 25].sort(); // Returns [100, 25]
+[100, 25].sort(byValue); // Returns [25, 100]
+```
+*/
+export const byValue = (a: number, b: number) => (a < b ? -1 : a > b ? 1 : 0);
+
+/** Use with: `sort`
  *
  * Sort the elements by `element[key]` (can also be an array index). Supports sorting by boolean values (elements that are `true` first).
 ```ts

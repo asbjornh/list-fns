@@ -20,6 +20,7 @@ import {
   excludeByProperty,
   by,
   byProperty,
+  byValue,
   get,
   sum,
   sumBy,
@@ -196,6 +197,10 @@ test("by", t => {
     { a: { b: 1 } },
     { a: { b: 2 } },
   ]);
+});
+
+test("byValue", t => {
+  t.deepEqual([100, 25].sort(byValue), [25, 100]);
 });
 
 test("by boolean", t => {
