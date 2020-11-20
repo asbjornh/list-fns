@@ -176,6 +176,23 @@ export const propertyIsnt = <
   value: TObject[TKey]
 ) => isntBy(get(key), value);
 
+/**
+ * Use with: `find`, `filter`
+ *
+ * Returns `true` for elements where `element[key]` for all provided keys is defined. This is useful when properties are needed but optional in the element type.
+ *
+ * Known limitations: Type inference doesn't always work when list elements have an inferred type.
+```ts
+type Person = { name?: string };
+const people: Person[] = [{ name: "John" }, {}];
+people.filter(has("name")); // Returns [{ name: "a" }]
+```
+ */
+export const has = <TObject extends object, TKey extends keyof TObject>(
+  ...keys: TKey[]
+) => (object: TObject): object is TObject & Required<Pick<TObject, TKey>> =>
+  keys.every(key => isDefined(object[key]));
+
 /** Use with: `filter`
  *
  * Returns a list of elements that are present in both lists

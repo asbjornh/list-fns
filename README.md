@@ -64,6 +64,7 @@ list.slice().sort();
 <li><a href="#get">get</a></li>
 <li><a href="#groupBy">groupBy</a></li>
 <li><a href="#groupByProperty">groupByProperty</a></li>
+<li><a href="#has">has</a></li>
 <li><a href="#intersection">intersection</a></li>
 <li><a href="#intersectionBy">intersectionBy</a></li>
 <li><a href="#intersectionByProperty">intersectionByProperty</a></li>
@@ -541,6 +542,42 @@ const groupByProperty = <
   const group: V[] = acc[groupName] || [];
   return Object.assign({}, acc, { [groupName]: group.concat(el) });
 }
+```
+
+  <p>
+</details>
+
+### <div id="has"></div> has
+
+
+```ts
+has: <TObject extends object, TKey extends keyof TObject>(...keys: TKey[]) => (object: TObject) => object is TObject & Required<Pick<TObject, TKey>>
+```
+
+
+Use with: `find` , `filter` 
+
+Returns `true` for elements where `element[key]` for all provided keys is defined. This is useful when properties are needed but optional in the element type.
+
+Known limitations: Type inference doesn't always work when list elements have an inferred type.
+
+```ts
+type Person = { name?: string };
+const people: Person[] = [{ name: "John" }, {}];
+people.filter(has("name")); // Returns [{ name: "a" }]
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const has = <TObject extends object, TKey extends keyof TObject>(
+  ...keys: TKey[]
+) => (object: TObject): object is TObject & Required<Pick<TObject, TKey>> =>
+  keys.every(key => isDefined(object[key]))
 ```
 
   <p>

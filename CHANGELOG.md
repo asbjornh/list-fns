@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+
+- Adds `has`
+
 ## 1.1.0
 
 - Adds `byValue`

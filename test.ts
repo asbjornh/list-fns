@@ -11,6 +11,7 @@ import {
   propertyIs,
   isnt,
   isntBy,
+  has,
   propertyIsnt,
   intersection,
   intersectionBy,
@@ -122,6 +123,14 @@ test("isntBy", t => {
 test("propertyIsnt", t => {
   t.deepEqual([{ a: 1 }, { a: 2 }].find(propertyIsnt("a", 2)), { a: 1 });
   t.deepEqual([{ a: 1 }, { a: 2 }].filter(propertyIsnt("a", 2)), [{ a: 1 }]);
+});
+
+test("has", t => {
+  t.deepEqual([{}, { a: "a" }].find(has("a")), { a: "a" });
+  t.deepEqual([{}, { a: "a" }].find(has()), {} as any);
+
+  t.deepEqual([{}, { a: "a" }].filter(has("a")), [{ a: "a" }]);
+  t.deepEqual([{}, { a: "a" }].filter(has()), [{}, { a: "a" }]);
 });
 
 test("intersection", t => {
