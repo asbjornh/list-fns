@@ -63,6 +63,7 @@ list.slice().sort();
 <li><a href="#excludeByProperty">excludeByProperty</a></li>
 <li><a href="#get">get</a></li>
 <li><a href="#groupBy">groupBy</a></li>
+<li><a href="#groupByMany">groupByMany</a></li>
 <li><a href="#groupByProperty">groupByProperty</a></li>
 <li><a href="#has">has</a></li>
 <li><a href="#intersection">intersection</a></li>
@@ -499,6 +500,47 @@ const groupBy = <K extends string, V>(
   if (!groupName) return acc;
   const group: V[] = acc[groupName] || [];
   return Object.assign({}, acc, { [groupName]: group.concat(el) });
+}
+```
+
+  <p>
+</details>
+
+### <div id="groupByMany"></div> groupByMany
+
+
+```ts
+groupByMany: <K extends string, V>(func: (el: V) => K[] | undefined) => (acc: Record<K, V[]>, el: V) => Record<K, V[]>
+```
+
+
+Use with: `reduce` 
+
+Given a function `func` that returns a list of keys, returns an object of lists of elements. Works like `groupBy` except that `func` should return a list of keys. Good for grouping objects by properties that are arrays. An empty object must be passed as the second argument to `reduce` 
+
+```ts
+const b1: B = { items: ["a", "b"] };
+const b2: B = { items: ["a"] };
+
+[b1, b2].reduce(groupByMany(b => b.items), {});
+// Returns { a: [{ items: ["a", "b"] }, { items: ["a"] }], b: [{ items: ["b"] }] }
+
+```
+
+
+<details>
+  <summary>Implementation</summary>
+  <p>
+    
+```ts
+const groupByMany = <K extends string, V>(
+  func: (el: V) => K[] | undefined
+) => (acc: Record<K, V[]>, el: V): Record<K, V[]> => {
+  const groupNames = func(el) || [];
+  groupNames.forEach(key => {
+    acc[key] = (acc[key] || []).concat(el);
+  });
+  return acc;
 }
 ```
 

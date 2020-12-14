@@ -558,6 +558,27 @@ export const groupBy = <K extends string, V>(
 
 /** Use with: `reduce`
  *
+ * Given a function `func` that returns a list of keys, returns an object of lists of elements. Works like `groupBy` except that `func` should return a list of keys. Good for grouping objects by properties that are arrays. An empty object must be passed as the second argument to `reduce`
+```ts
+const b1: B = { items: ["a", "b"] };
+const b2: B = { items: ["a"] };
+
+[b1, b2].reduce(groupByMany(b => b.items), {});
+// Returns { a: [{ items: ["a", "b"] }, { items: ["a"] }], b: [{ items: ["b"] }] }
+```
+ */
+export const groupByMany = <K extends string, V>(
+  func: (el: V) => K[] | undefined
+) => (acc: Record<K, V[]>, el: V): Record<K, V[]> => {
+  const groupNames = func(el) || [];
+  groupNames.forEach(key => {
+    acc[key] = (acc[key] || []).concat(el);
+  });
+  return acc;
+};
+
+/** Use with: `reduce`
+ *
  * Given a property name, returns an object of lists of elements, grouped by the values for that property. A second argument must be passed to `reduce`. For javascript an empty object is enough. For typescript an object with properties or a type cast is required.
 ```ts
 [{ name: "Jane" }, { name: "John" }].reduce(

@@ -33,6 +33,7 @@ import {
   minBy,
   minByProperty,
   groupBy,
+  groupByMany,
   groupByProperty,
   partition,
   countBy,
@@ -351,6 +352,23 @@ test("groupBy", t => {
     {}
   );
   t.deepEqual(dict, { a: [{ name: "a" }, { name: "a" }], b: [{ name: "b" }] });
+});
+
+test("groupByMany", t => {
+  type A = { id: string };
+  type B = { items: A[] };
+
+  const a1: A = { id: "1" };
+  const a2: A = { id: "2" };
+  const a3: A = { id: "3" };
+  const b1: B = { items: [a1, a2] };
+  const b2: B = { items: [a2, a3] };
+
+  const dict = [b1, b2].reduce(
+    groupByMany<string, B>(b => b.items.map(a => a.id)),
+    {}
+  );
+  t.deepEqual(dict, { 1: [b1], 2: [b1, b2], 3: [b2] });
 });
 
 test("groupByProperty", t => {

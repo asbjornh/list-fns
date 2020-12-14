@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+- Adds `groupByMany`
+
 ## 1.2.0
 
 - Adds `has`
