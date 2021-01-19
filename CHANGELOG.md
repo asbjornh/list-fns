@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.3.1
+
+- Updates readme
+- Improves performance of
+  - `duplicates`
+  - `duplicatesBy`
+  - `duplicatesByProperty`
+  - `groupBy`
+  - `groupByMany`
+  - `groupByProperty`
+  - `partition`
+
 ## 1.3.0
 
 - Adds `groupByMany`

@@ -25,14 +25,6 @@ const findIndex = <T>(list: T[], pred: (a: T) => boolean) => {
   return -1;
 };
 
-const numberOfOccurencesBy = <T, U>(list: T[], el: T, map: (a: T) => U) => {
-  let n = 0;
-  for (let i = 0; i < list.length; i++) {
-    if (map(list[i]) === map(el)) n++;
-  }
-  return n;
-};
-
 /** Use with: `filter`
  * 
  * Returns all duplicates compared by `func(element)`
@@ -44,7 +36,14 @@ export const duplicatesBy = <T>(func: (el: T) => unknown) => (
   el: T,
   _: number,
   list: T[]
-) => numberOfOccurencesBy(list, el, func) > 1;
+) => {
+  let n = 0;
+  for (let i = 0; i < list.length; i++) {
+    if (n >= 2) return true;
+    if (func(list[i]) === func(el)) n++;
+  }
+  return false;
+};
 
 /** Use with: `filter`
  * 
@@ -539,7 +538,7 @@ export const minByProperty = <
 
 /** Use with: `reduce`
  *
- * Given a key-returning function, returns an object of lists of elements. A second argument must be passed to `reduce`. For javascript an empty object is enough. For typescript an object with properties or a type cast is required.
+ * Given a key-returning function, returns the elements grouped in an object according to the returned keys. A second argument must be passed to `reduce`. For javascript an empty object is enough. For typescript an object with properties or a type cast may be required.
 ```ts
 [{ age: 10 }, { age: 80 }].reduce(
   groupBy(el => (el.age > 30 ? "old" : "young")),
@@ -552,13 +551,14 @@ export const groupBy = <K extends string, V>(
 ) => (acc: Record<K, V[]>, el: V): Record<K, V[]> => {
   const groupName = func(el);
   if (!groupName) return acc;
-  const group: V[] = acc[groupName] || [];
-  return Object.assign({}, acc, { [groupName]: group.concat(el) });
+  if (!acc[groupName]) acc[groupName] = [];
+  acc[groupName].push(el);
+  return acc;
 };
 
 /** Use with: `reduce`
  *
- * Given a function `func` that returns a list of keys, returns an object of lists of elements. Works like `groupBy` except that `func` should return a list of keys. Good for grouping objects by properties that are arrays. An empty object must be passed as the second argument to `reduce`
+ * Given a function `func` that returns a list of keys, returns an object containing the elements grouped by the returned keys. Unlike the `groupBy` function, elements can appear several times in this object. Good for grouping objects by properties that are arrays. An empty object must be passed as the second argument to `reduce`
 ```ts
 const b1: B = { items: ["a", "b"] };
 const b2: B = { items: ["a"] };
@@ -572,14 +572,15 @@ export const groupByMany = <K extends string, V>(
 ) => (acc: Record<K, V[]>, el: V): Record<K, V[]> => {
   const groupNames = func(el) || [];
   groupNames.forEach(key => {
-    acc[key] = (acc[key] || []).concat(el);
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(el);
   });
   return acc;
 };
 
 /** Use with: `reduce`
  *
- * Given a property name, returns an object of lists of elements, grouped by the values for that property. A second argument must be passed to `reduce`. For javascript an empty object is enough. For typescript an object with properties or a type cast is required.
+ * Given a property name, returns an object containing the elements grouped by the values for that property. A second argument must be passed to `reduce`. For javascript an empty object is enough. For typescript an object with properties or a type cast may be required.
 ```ts
 [{ name: "Jane" }, { name: "John" }].reduce(
   groupByProperty("name"),
@@ -595,8 +596,9 @@ export const groupByProperty = <
 ) => (acc: Record<V[K], V[]>, el: V): Record<V[K], V[]> => {
   const groupName = el[key];
   if (!groupName) return acc;
-  const group: V[] = acc[groupName] || [];
-  return Object.assign({}, acc, { [groupName]: group.concat(el) });
+  if (!acc[groupName]) acc[groupName] = [];
+  acc[groupName].push(el);
+  return acc;
 };
 
 /** Use with: `reduce`
@@ -613,7 +615,9 @@ export const partition = <T>(func: (el: T) => boolean) => (
 ) => {
   const a0 = acc[0] || [],
     a1 = acc[1] || [];
-  return func(el) ? [a0.concat(el), a1] : [a0, a1.concat(el)];
+  if (func(el)) a0.push(el);
+  else a1.push(el);
+  return [a0, a1];
 };
 
 /** Use with: `reduce`

@@ -4,7 +4,9 @@
 ![](https://img.shields.io/badge/dependencies-zero-green)
 ![](https://img.shields.io/bundlephobia/min/list-fns)
 
-This library contains higher order functions for doing common list operations to enable a more declarative style when working with lists. File size is prioritized over performance (several of the functions are O(n^2)); this is not recommended for use with very large datasets.
+This library contains higher order functions that simplify common list operations, similar to what you'd find in `lodash` or `ramda`. Unlike these libraries, `list-fns` is designed specifically to be used with the native array methods.
+
+These functions have not been rigorously tested for performance so they are currently not recommended for use with large datasets.
 
 **Example**
 
@@ -17,6 +19,7 @@ const people = [
   { name: "Jane", age: 20 },
 ];
 
+// Inline implementation:
 people
   .filter(
     (person, index) => index === people.findIndex(p => p.name === person.name)
@@ -24,6 +27,7 @@ people
   .sort((a, b) => (a.age < b.age ? -1 : a.age > b.age ? 1 : 0))
   .map(person => person.name); // ["Jane", "Jack"]
 
+// With list functions:
 people
   .filter(uniqueByProperty("name"))
   .sort(byProperty("age"))
@@ -36,7 +40,7 @@ people
 npm install list-fns
 ```
 
-## Disclaimer about sorting
+## A note about sorting
 
 This library contains functions to be used with `[].sort()`. Always be mindful of the fact that `.sort()` and `.reverse()` will mutate the original list. If `.sort()` is the first method you're calling on a list you should probably clone it first in order to avoid unexpected behavior:
 
@@ -282,7 +286,14 @@ const duplicatesBy = <T>(func: (el: T) => unknown) => (
   el: T,
   _: number,
   list: T[]
-) => numberOfOccurencesBy(list, el, func) > 1
+) => {
+  let n = 0;
+  for (let i = 0; i < list.length; i++) {
+    if (n >= 2) return true;
+    if (func(list[i]) === func(el)) n++;
+  }
+  return false;
+}
 ```
 
   <p>
@@ -477,7 +488,7 @@ groupBy: <K extends string, V>(func: (el: V) => K | undefined) => (acc: Record<K
 
 Use with: `reduce` 
 
-Given a key-returning function, returns an object of lists of elements. A second argument must be passed to `reduce` . For javascript an empty object is enough. For typescript an object with properties or a type cast is required.
+Given a key-returning function, returns the elements grouped in an object according to the returned keys. A second argument must be passed to `reduce` . For javascript an empty object is enough. For typescript an object with properties or a type cast may be required.
 
 ```ts
 [{ age: 10 }, { age: 80 }].reduce(
@@ -498,8 +509,9 @@ const groupBy = <K extends string, V>(
 ) => (acc: Record<K, V[]>, el: V): Record<K, V[]> => {
   const groupName = func(el);
   if (!groupName) return acc;
-  const group: V[] = acc[groupName] || [];
-  return Object.assign({}, acc, { [groupName]: group.concat(el) });
+  if (!acc[groupName]) acc[groupName] = [];
+  acc[groupName].push(el);
+  return acc;
 }
 ```
 
@@ -516,7 +528,7 @@ groupByMany: <K extends string, V>(func: (el: V) => K[] | undefined) => (acc: Re
 
 Use with: `reduce` 
 
-Given a function `func` that returns a list of keys, returns an object of lists of elements. Works like `groupBy` except that `func` should return a list of keys. Good for grouping objects by properties that are arrays. An empty object must be passed as the second argument to `reduce` 
+Given a function `func` that returns a list of keys, returns an object containing the elements grouped by the returned keys. Unlike the `groupBy` function, elements can appear several times in this object. Good for grouping objects by properties that are arrays. An empty object must be passed as the second argument to `reduce` 
 
 ```ts
 const b1: B = { items: ["a", "b"] };
@@ -538,7 +550,8 @@ const groupByMany = <K extends string, V>(
 ) => (acc: Record<K, V[]>, el: V): Record<K, V[]> => {
   const groupNames = func(el) || [];
   groupNames.forEach(key => {
-    acc[key] = (acc[key] || []).concat(el);
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(el);
   });
   return acc;
 }
@@ -557,7 +570,7 @@ groupByProperty: <K extends keyof V, V extends { [key: string]: any; }>(key: K) 
 
 Use with: `reduce` 
 
-Given a property name, returns an object of lists of elements, grouped by the values for that property. A second argument must be passed to `reduce` . For javascript an empty object is enough. For typescript an object with properties or a type cast is required.
+Given a property name, returns an object containing the elements grouped by the values for that property. A second argument must be passed to `reduce` . For javascript an empty object is enough. For typescript an object with properties or a type cast may be required.
 
 ```ts
 [{ name: "Jane" }, { name: "John" }].reduce(
@@ -581,8 +594,9 @@ const groupByProperty = <
 ) => (acc: Record<V[K], V[]>, el: V): Record<V[K], V[]> => {
   const groupName = el[key];
   if (!groupName) return acc;
-  const group: V[] = acc[groupName] || [];
-  return Object.assign({}, acc, { [groupName]: group.concat(el) });
+  if (!acc[groupName]) acc[groupName] = [];
+  acc[groupName].push(el);
+  return acc;
 }
 ```
 
@@ -1247,7 +1261,9 @@ const partition = <T>(func: (el: T) => boolean) => (
 ) => {
   const a0 = acc[0] || [],
     a1 = acc[1] || [];
-  return func(el) ? [a0.concat(el), a1] : [a0, a1.concat(el)];
+  if (func(el)) a0.push(el);
+  else a1.push(el);
+  return [a0, a1];
 }
 ```
 

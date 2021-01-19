@@ -380,12 +380,17 @@ test("groupByProperty", t => {
 });
 
 test("partition", t => {
-  const [old, young] = [{ age: 10 }, { age: 80 }].reduce(
+  const [old, young] = [
+    { age: 10 },
+    { age: 20 },
+    { age: 40 },
+    { age: 80 },
+  ].reduce(
     partition(el => el.age > 30),
     []
   );
-  t.deepEqual(old, [{ age: 80 }]);
-  t.deepEqual(young, [{ age: 10 }]);
+  t.deepEqual(old, [{ age: 40 }, { age: 80 }]);
+  t.deepEqual(young, [{ age: 10 }, { age: 20 }]);
 });
 
 test("partition mapping", t => {

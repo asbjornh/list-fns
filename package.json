@@ -1,6 +1,6 @@
 {
   "name": "list-fns",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "A collection of utility functions to be used with .map, .filter, .sort and .reduce",
   "main": "dist/index.js",
   "files": [
