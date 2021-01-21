@@ -1,21 +1,31 @@
+type SetNonNullable<T, Keys extends keyof T> = {
+  [p in keyof T]: p extends Keys ? NonNullable<T[p]> : T[p];
+};
+
+/** Sets the properties to both required and non nullable */
+type HasProperties<O, K extends keyof O> = SetNonNullable<O, K> &
+  Required<Pick<O, K>> extends infer I
+  ? { [k in keyof I]: I[k] }
+  : never;
+
 /** Use with: `filter`
  * 
- * Removes elements that are `undefined`
+ * Remove elements that are `undefined` or `null`
 ```ts
-[1, undefined, 2].filter(isDefined); // Returns [1, 2]
+[1, null, undefined, 2].filter(isDefined); // Returns [1, 2]
 ```
  */
-export const isDefined = <T>(x: T | undefined): x is T =>
-  typeof x !== "undefined";
+export const isDefined = <T>(x: T): x is NonNullable<T> =>
+  x !== undefined && x !== null;
 
 /** Use with: `map`
  * 
- * Replaces list elements that are `undefined` with `fallback`
+ * Replaces list elements that are `undefined` or `null` with `fallback`
 ```ts
-[1, undefined, 2].map(or(0)); // Returns [1, 0, 2]
+[1, null, undefined, 2].map(or(0)); // Returns [1, 0, 0, 2]
 ```
  */
-export const or = <T>(fallback: T) => (x: T | undefined): T =>
+export const or = <T>(fallback: NonNullable<T>) => (x: T): NonNullable<T> =>
   isDefined(x) ? x : fallback;
 
 const findIndex = <T>(list: T[], pred: (a: T) => boolean) => {
@@ -189,7 +199,7 @@ people.filter(has("name")); // Returns [{ name: "a" }]
  */
 export const has = <TObject extends object, TKey extends keyof TObject>(
   ...keys: TKey[]
-) => (object: TObject): object is TObject & Required<Pick<TObject, TKey>> =>
+) => (object: TObject): object is TObject & HasProperties<TObject, TKey> =>
   keys.every(key => isDefined(object[key]));
 
 /** Use with: `filter`

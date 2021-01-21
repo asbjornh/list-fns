@@ -607,7 +607,7 @@ const groupByProperty = <
 
 
 ```ts
-has: <TObject extends object, TKey extends keyof TObject>(...keys: TKey[]) => (object: TObject) => object is TObject & Required<Pick<TObject, TKey>>
+has: <TObject extends object, TKey extends keyof TObject>(...keys: TKey[]) => (object: TObject) => object is TObject & HasProperties<TObject, TKey>
 ```
 
 
@@ -632,7 +632,7 @@ people.filter(has("name")); // Returns [{ name: "a" }]
 ```ts
 const has = <TObject extends object, TKey extends keyof TObject>(
   ...keys: TKey[]
-) => (object: TObject): object is TObject & Required<Pick<TObject, TKey>> =>
+) => (object: TObject): object is TObject & HasProperties<TObject, TKey> =>
   keys.every(key => isDefined(object[key]))
 ```
 
@@ -804,16 +804,16 @@ const isBy = <T, U>(func: (el: T) => U, value: U) => (el: T) =>
 
 
 ```ts
-isDefined: <T>(x: T | undefined) => x is T
+isDefined: <T>(x: T) => x is NonNullable<T>
 ```
 
 
 Use with: `filter` 
 
-Removes elements that are `undefined` 
+Remove elements that are `undefined` or `null` 
 
 ```ts
-[1, undefined, 2].filter(isDefined); // Returns [1, 2]
+[1, null, undefined, 2].filter(isDefined); // Returns [1, 2]
 
 ```
 
@@ -823,8 +823,8 @@ Removes elements that are `undefined`
   <p>
     
 ```ts
-const isDefined = <T>(x: T | undefined): x is T =>
-  typeof x !== "undefined"
+const isDefined = <T>(x: T): x is NonNullable<T> =>
+  x !== undefined && x !== null
 ```
 
   <p>
@@ -1205,16 +1205,16 @@ const minByProperty = <
 
 
 ```ts
-or: <T>(fallback: T) => (x: T | undefined) => T
+or: <T>(fallback: NonNullable<T>) => (x: T) => NonNullable<T>
 ```
 
 
 Use with: `map` 
 
-Replaces list elements that are `undefined` with `fallback` 
+Replaces list elements that are `undefined` or `null` with `fallback` 
 
 ```ts
-[1, undefined, 2].map(or(0)); // Returns [1, 0, 2]
+[1, null, undefined, 2].map(or(0)); // Returns [1, 0, 0, 2]
 
 ```
 
@@ -1224,7 +1224,7 @@ Replaces list elements that are `undefined` with `fallback`
   <p>
     
 ```ts
-const or = <T>(fallback: T) => (x: T | undefined): T =>
+const or = <T>(fallback: NonNullable<T>) => (x: T): NonNullable<T> =>
   isDefined(x) ? x : fallback
 ```
 

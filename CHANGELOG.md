@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+
+- `isDefined`: adds check for `null`
+- `or`: adds check for `null`
+- `has`: adds check for `null`, updates return type to work better with required but nullable properties
+
 ## 1.3.1
 
 - Updates readme

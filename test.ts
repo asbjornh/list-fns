@@ -50,12 +50,12 @@ import {
 
 test("isDefined", t => {
   t.deepEqual([1, 2].filter(isDefined), [1, 2]);
-  t.deepEqual([1, 2, undefined, 3].filter(isDefined), [1, 2, 3]);
+  t.deepEqual([1, null, undefined, 3].filter(isDefined), [1, 3]);
 });
 
 test("or", t => {
   t.deepEqual([1, 2].map(or(0)), [1, 2]);
-  t.deepEqual([1, 2, undefined, 3].map(or(0)), [1, 2, 0, 3]);
+  t.deepEqual([1, null, undefined, 3].map(or(0)), [1, 0, 0, 3]);
 });
 
 test("duplicates", t => {
@@ -129,9 +129,11 @@ test("propertyIsnt", t => {
 test("has", t => {
   t.deepEqual([{}, { a: "a" }].find(has("a")), { a: "a" });
   t.deepEqual([{}, { a: "a" }].find(has()), {} as any);
+  t.deepEqual([{ a: null }, { a: "a" }].find(has("a")), { a: "a" });
 
   t.deepEqual([{}, { a: "a" }].filter(has("a")), [{ a: "a" }]);
   t.deepEqual([{}, { a: "a" }].filter(has()), [{}, { a: "a" }]);
+  t.deepEqual([{ a: null }, { a: "a" }].filter(has("a")), [{ a: "a" }]);
 });
 
 test("intersection", t => {
